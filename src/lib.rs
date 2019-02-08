@@ -14,10 +14,10 @@ pub use client::Client;
 pub use device::Device;
 pub use file::*;
 pub use os::OS;
-pub use parser::Parser;
+pub use parser::UserAgentParser;
 pub use user_agent::UserAgent;
 
-pub trait UserAgentParser {
+pub trait Parser {
     type Item;
     fn parse(&self, stringable: impl std::string::ToString) -> Self::Item;
 }
@@ -28,6 +28,6 @@ mod tests {
 
     #[test]
     fn parser_creation() {
-        let parser = Parser::from_yaml("./src/core/regexes.yaml");
+        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
     }
 }

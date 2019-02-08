@@ -1,4 +1,4 @@
-use super::{client::*, device::*, file::*, os::*, UserAgentParser};
+use super::{client::*, device::*, file::*, os::*, Parser};
 use serde_yaml;
 
 mod device;
@@ -6,7 +6,7 @@ mod os;
 mod user_agent;
 
 #[derive(Debug)]
-pub struct Parser {
+pub struct UserAgentParser {
   user_agent_matchers: Vec<user_agent::Matcher>,
   os_matchers: Vec<os::Matcher>,
   device_matchers: Vec<device::Matcher>,
@@ -31,7 +31,7 @@ fn split_regexes(regex: &str) -> Vec<String> {
   vec![cleaned]
 }
 
-impl UserAgentParser for Parser {
+impl Parser for UserAgentParser {
   type Item = Client;
 
   fn parse(&self, agent: impl std::string::ToString) -> Self::Item {
@@ -39,21 +39,21 @@ impl UserAgentParser for Parser {
   }
 }
 
-impl Parser {
-  pub fn from_yaml(path: &str) -> Parser {
+impl UserAgentParser {
+  pub fn from_yaml(path: &str) -> UserAgentParser {
     let mut file = std::fs::File::open(path).expect("File not found!");
-    Parser::from_file(file)
+    UserAgentParser::from_file(file)
   }
 
-  pub fn from_file(file: std::fs::File) -> Parser {
+  pub fn from_file(file: std::fs::File) -> UserAgentParser {
     let regex_file: RegexFile = serde_yaml::from_reader(file).expect("Serde Error");
-    Parser::from(regex_file)
+    UserAgentParser::from(regex_file)
   }
 }
 
-impl From<RegexFile> for Parser {
-  fn from(regex_file: RegexFile) -> Parser {
-    Parser {
+impl From<RegexFile> for UserAgentParser {
+  fn from(regex_file: RegexFile) -> UserAgentParser {
+    UserAgentParser {
       user_agent_matchers: regex_file
         .user_agent_parsers
         .into_iter()
