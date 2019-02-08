@@ -30,12 +30,4 @@ mod tests {
     fn parser_creation() {
         let parser = Parser::from_yaml("./src/core/regexes.yaml");
     }
-
-    // #[test]
-    // fn regex() {
-    //     let expression = r#"^(.*)-iPad/(\\d+)(?:\\.(\\d+)|)(?:\\.(\\d+)|)(?:\\.(\\d+)|) CFNetwork"#
-    //         .to_string()
-    //         .replace("|)", "?)");
-    //     let regex = regex::Regex::new(&expression).unwrap();
-    // }
 }

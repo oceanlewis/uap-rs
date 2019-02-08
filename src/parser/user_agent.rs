@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Debug)]
 pub struct Matcher {
   regex: onig::Regex,
   family_replacement: Option<String>,

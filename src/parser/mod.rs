@@ -5,6 +5,7 @@ mod device;
 mod os;
 mod user_agent;
 
+#[derive(Debug)]
 pub struct Parser {
   user_agent_matchers: Vec<user_agent::Matcher>,
   os_matchers: Vec<os::Matcher>,
