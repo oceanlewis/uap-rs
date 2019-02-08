@@ -1,0 +1,12 @@
+[package]
+name = "uap-rs"
+version = "0.1.0"
+authors = ["David Lewis <david@weassemble.com>"]
+edition = "2018"
+
+[dependencies]
+serde = "1.0.87"
+serde_yaml = "0.8.8"
+serde_derive = "1.0.87"
+
+regex = "1.1.0"
