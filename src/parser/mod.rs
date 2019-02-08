@@ -1,4 +1,5 @@
-use super::*;
+use super::{client::*, device::*, file::*, os::*, UserAgentParser};
+use serde_yaml;
 
 mod device;
 mod os;
@@ -10,6 +11,33 @@ pub struct Parser {
   device_matchers: Vec<device::Matcher>,
 }
 
+fn split_regexes(regex: &str) -> Vec<String> {
+  let cleaned = regex
+    .to_owned()
+    .replace(r"\/", r"\\/")
+    .replace(r"|)", r")?");
+
+  let split = cleaned
+    .split('|')
+    .map(str::to_string)
+    .collect::<Vec<String>>();
+
+  println!("{:#?}", split);
+  [0..split.len()].iter().map(|_| {
+    let full_split = split.to_owned();
+  });
+
+  vec![cleaned]
+}
+
+impl UserAgentParser for Parser {
+  type Item = Client;
+
+  fn parse(&self, agent: impl std::string::ToString) -> Self::Item {
+    unimplemented!()
+  }
+}
+
 impl Parser {
   pub fn from_yaml(path: &str) -> Parser {
     let mut file = std::fs::File::open(path).expect("File not found!");
@@ -17,22 +45,7 @@ impl Parser {
   }
 
   pub fn from_file(file: std::fs::File) -> Parser {
-    let mut regex_file: RegexFile = serde_yaml::from_reader(file).expect("Serde Error");
-
-    let fix = |regex: &String| -> String { regex.replace(r"\/", r"/") };
-
-    for parser in regex_file.device_parsers.iter_mut() {
-      parser.regex = fix(&parser.regex);
-    }
-
-    for parser in regex_file.os_parsers.iter_mut() {
-      parser.regex = fix(&parser.regex);
-    }
-
-    for parser in regex_file.user_agent_parsers.iter_mut() {
-      parser.regex = fix(&parser.regex);
-    }
-
+    let regex_file: RegexFile = serde_yaml::from_reader(file).expect("Serde Error");
     Parser::from(regex_file)
   }
 }

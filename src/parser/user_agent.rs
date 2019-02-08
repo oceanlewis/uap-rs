@@ -1,22 +1,31 @@
 use super::*;
 
 pub struct Matcher {
-  regex: regex::Regex,
+  regex: Vec<onig::Regex>,
   family_replacement: Option<String>,
   device_replacement: Option<String>,
 }
 
 impl From<UserAgentParserEntry> for Matcher {
   fn from(entry: UserAgentParserEntry) -> Matcher {
-    let regex_builder = regex::RegexBuilder::new(&entry.regex);
-    let regex = regex_builder.build();
+    let fixed_regexes = split_regexes(&entry.regex);
 
-    if regex.is_err() {
-      println!("{:#?}", entry.regex);
-    }
+    let regexes = fixed_regexes
+      .into_iter()
+      .map(|regex| {
+        let regex_builder = onig::Regex::new(&regex);
+
+        let regex = regex_builder.build();
+        if regex.is_err() {
+          println!("{:#?}", entry.regex);
+        }
+
+        regex.expect("Regex failed to build")
+      })
+      .collect();
 
     Matcher {
-      regex: regex.expect("Regex failed to build"),
+      regex: regexes,
       family_replacement: entry.family_replacement,
       device_replacement: entry.device_replacement,
     }
