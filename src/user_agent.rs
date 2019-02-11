@@ -7,8 +7,8 @@ pub type UserAgentPatch = String;
 
 #[derive(Debug, Deserialize)]
 pub struct UserAgent {
-    family: UserAgentFamily,
-    major: Option<UserAgentMajor>,
-    minor: Option<UserAgentMinor>,
-    patch: Option<UserAgentPatch>,
+  pub family: UserAgentFamily,
+  pub major: Option<UserAgentMajor>,
+  pub minor: Option<UserAgentMinor>,
+  pub patch: Option<UserAgentPatch>,
 }

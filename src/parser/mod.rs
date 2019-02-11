@@ -1,4 +1,4 @@
-use super::{client::*, device::*, file::*, os::*, Parser};
+use super::{client::*, device::*, file::*, os::*, user_agent::*, Parser, SubParser};
 use serde_yaml;
 
 mod device;
@@ -12,30 +12,31 @@ pub struct UserAgentParser {
   device_matchers: Vec<device::Matcher>,
 }
 
-fn split_regexes(regex: &str) -> Vec<String> {
-  let cleaned = regex
-    .to_owned()
-    .replace(r"\/", r"\\/")
-    .replace(r"|)", r")?");
-
-  let split = cleaned
-    .split('|')
-    .map(str::to_string)
-    .collect::<Vec<String>>();
-
-  println!("{:#?}", split);
-  [0..split.len()].iter().map(|_| {
-    let full_split = split.to_owned();
-  });
-
-  vec![cleaned]
-}
-
 impl Parser for UserAgentParser {
-  type Item = Client;
-
-  fn parse(&self, agent: impl std::string::ToString) -> Self::Item {
+  fn parse(&self, user_agent: &str) -> Option<Client> {
     unimplemented!()
+  }
+
+  fn parse_device(&self, user_agent: &str) -> Option<Device> {
+    self
+      .device_matchers
+      .iter()
+      .filter_map(|matcher| matcher.try_parse(&user_agent))
+      .collect::<Vec<Device>>()
+      .pop()
+  }
+
+  fn parse_os(&self, user_agent: &str) -> Option<OS> {
+    unimplemented!()
+  }
+
+  fn parse_user_agent(&self, user_agent: &str) -> Option<UserAgent> {
+    self
+      .user_agent_matchers
+      .iter()
+      .filter_map(|matcher| matcher.try_parse(&user_agent))
+      .collect::<Vec<UserAgent>>()
+      .pop()
   }
 }
 
