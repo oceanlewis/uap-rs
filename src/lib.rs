@@ -83,8 +83,23 @@ mod tests {
 
         for test_case in test_cases.test_cases.into_iter() {
             let ua = parser.parse_user_agent(&test_case.user_agent_string);
-            assert!(ua.is_some());
+            if ua.is_none() {
+                println!("{:#?}", test_case);
+            }
             let ua = ua.unwrap();
+
+            assert_same(ua, test_case);
+        }
+
+        fn assert_same(ua: UserAgent, test_case: UserAgentTestCase) {
+            if ua.family != test_case.family
+                || ua.major != test_case.major
+                || ua.minor != test_case.minor
+                || ua.patch != test_case.patch
+            {
+                println!("Parsed:\n{:#?}\nExpected:\n{:#?}", ua, test_case);
+            }
+
             assert_eq!(ua.family, test_case.family);
             assert_eq!(ua.major, test_case.major);
             assert_eq!(ua.minor, test_case.minor);
