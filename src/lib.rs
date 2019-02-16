@@ -33,31 +33,31 @@ pub trait SubParser {
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn parse_device() {
-    //     #[derive(Deserialize, Debug)]
-    //     struct DeviceTestCases {
-    //         test_cases: Vec<DeviceTestCase>,
-    //     }
+    #[test]
+    fn parse_device() {
+        #[derive(Deserialize, Debug)]
+        struct DeviceTestCases {
+            test_cases: Vec<DeviceTestCase>,
+        }
 
-    //     #[derive(Deserialize, Debug)]
-    //     struct DeviceTestCase {
-    //         user_agent_string: String,
-    //         family: String,
-    //         brand: String,
-    //         model: String,
-    //     }
+        #[derive(Deserialize, Debug)]
+        struct DeviceTestCase {
+            user_agent_string: String,
+            family: String,
+            brand: String,
+            model: String,
+        }
 
-    //     let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
-    //     let mut file = std::fs::File::open("./src/core/tests/test_device.yaml")
-    //         .expect("test_device.yaml failed to load");
-    //     let test_cases: DeviceTestCases =
-    //         serde_yaml::from_reader(&mut file).expect("Failed to deserialize device test cases");
+        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+        let mut file = std::fs::File::open("./src/core/tests/test_device.yaml")
+            .expect("test_device.yaml failed to load");
+        let test_cases: DeviceTestCases =
+            serde_yaml::from_reader(&mut file).expect("Failed to deserialize device test cases");
 
-    //     for test_case in test_cases.test_cases.into_iter() {
-    //         let ua = parser.parse_device(&test_case.user_agent_string);
-    //     }
-    // }
+        for test_case in test_cases.test_cases.into_iter() {
+            let ua = parser.parse_device(&test_case.user_agent_string);
+        }
+    }
 
     #[test]
     fn parse_user_agent() {

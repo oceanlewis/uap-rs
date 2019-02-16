@@ -3,7 +3,6 @@ use super::*;
 #[derive(Debug)]
 pub struct Matcher {
   regex: onig::Regex,
-  case_insensitive: bool,
   device_replacement: Option<String>,
   brand_replacement: Option<String>,
   model_replacement: Option<String>,
@@ -26,10 +25,6 @@ impl SubParser for Matcher {
       //   pub brand_replacement: Option<String>,
       //   pub model_replacement: Option<String>,
       // }
-      println!("{:#?}", captures.at(0));
-      println!("{:#?}", captures.at(1));
-      println!("{:#?}", captures.at(2));
-      println!("{:#?}", captures.at(3));
 
       // if let Some(family) = self
       //   .family_replacement
@@ -51,7 +46,12 @@ impl SubParser for Matcher {
 
 impl From<DeviceParserEntry> for Matcher {
   fn from(entry: DeviceParserEntry) -> Matcher {
-    let regex = onig::Regex::new(&entry.regex);
+    let options = if (Some("i") == entry.regex_flag.as_ref().map(String::as_str)) {
+      onig::RegexOptions::REGEX_OPTION_IGNORECASE
+    } else {
+      onig::RegexOptions::REGEX_OPTION_NONE
+    };
+    let regex = onig::Regex::with_options(&entry.regex, options, onig::Syntax::default());
 
     if regex.is_err() {
       println!("{:#?}", entry.regex);
@@ -59,7 +59,6 @@ impl From<DeviceParserEntry> for Matcher {
 
     Matcher {
       regex: regex.expect("Regex failed to build"),
-      case_insensitive: (Some("i") == entry.regex_flag.as_ref().map(String::as_str)),
       device_replacement: entry.device_replacement,
       brand_replacement: entry.brand_replacement,
       model_replacement: entry.model_replacement,

@@ -50,10 +50,6 @@ impl SubParser for Matcher {
                 .to_owned()
                 .or_else(|| captures.at(4).and_then(empty_string_is_none));
 
-            if patch == Some(String::from("")) {
-                println!("{:#?}", captures.at(4));
-            }
-
             let agent = UserAgent {
                 family: family.to_owned(),
                 major: major,
@@ -72,12 +68,10 @@ impl From<UserAgentParserEntry> for Matcher {
     fn from(entry: UserAgentParserEntry) -> Matcher {
         let regex = onig::Regex::new(&entry.regex);
 
-        if regex.is_err() {
-            println!("{:#?}", entry.regex);
-        }
-
         Matcher {
-            regex: regex.expect("Regex failed to build"),
+            regex: regex.unwrap_or_else(|_| {
+                panic!("Regex:\n{:#?}\nfailed to build", entry.regex)
+            }),
             family_replacement: entry.family_replacement,
             v1_replacement: entry.v1_replacement,
             v2_replacement: entry.v2_replacement,
