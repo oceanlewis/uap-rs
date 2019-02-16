@@ -15,13 +15,13 @@ pub use device::Device;
 pub use file::*;
 pub use os::OS;
 pub use parser::UserAgentParser;
-pub use user_agent::UserAgent;
+pub use user_agent::*;
 
 pub trait Parser {
     fn parse(&self, user_agent: &str) -> Option<Client>;
     fn parse_device(&self, user_agent: &str) -> Option<Device>;
     fn parse_os(&self, user_agent: &str) -> Option<OS>;
-    fn parse_user_agent(&self, user_agent: &str) -> Option<UserAgent>;
+    fn parse_user_agent(&self, user_agent: &str) -> UserAgent;
 }
 
 pub trait SubParser {
@@ -78,32 +78,57 @@ mod tests {
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
         let mut file = std::fs::File::open("./src/core/tests/test_ua.yaml")
             .expect("test_device.yaml failed to load");
-        let test_cases: UserAgentTestCases =
-            serde_yaml::from_reader(&mut file).expect("Failed to deserialize device test cases");
+        let test_cases: UserAgentTestCases = serde_yaml::from_reader(&mut file)
+            .expect("Failed to deserialize device test cases");
+
+        let mut passed = Vec::new();
+        let mut failed = Vec::new();
 
         for test_case in test_cases.test_cases.into_iter() {
             let ua = parser.parse_user_agent(&test_case.user_agent_string);
-            if ua.is_none() {
-                println!("{:#?}", test_case);
-            }
-            let ua = ua.unwrap();
 
-            assert_same(ua, test_case);
+            if test_eq(&ua, &test_case) {
+                passed.push((ua, test_case));
+            } else {
+                failed.push((ua, test_case));
+            }
         }
 
-        fn assert_same(ua: UserAgent, test_case: UserAgentTestCase) {
+        fn test_eq(ua: &UserAgent, test_case: &UserAgentTestCase) -> bool {
             if ua.family != test_case.family
-                || ua.major != test_case.major
-                || ua.minor != test_case.minor
-                || ua.patch != test_case.patch
+                || ua.major
+                    != test_case
+                        .major
+                        .as_ref()
+                        .and_then(|v| str::parse::<usize>(v).ok())
+                || ua.minor
+                    != test_case
+                        .minor
+                        .as_ref()
+                        .and_then(|v| str::parse::<usize>(v).ok())
+                || ua.patch
+                    != test_case
+                        .patch
+                        .as_ref()
+                        .and_then(|v| str::parse::<usize>(v).ok())
             {
-                println!("Parsed:\n{:#?}\nExpected:\n{:#?}", ua, test_case);
+                return false;
             }
-
-            assert_eq!(ua.family, test_case.family);
-            assert_eq!(ua.major, test_case.major);
-            assert_eq!(ua.minor, test_case.minor);
-            assert_eq!(ua.patch, test_case.patch);
+            true
         }
+
+        if !failed.is_empty() {
+            for fail in failed.iter() {
+                println!(
+                    r"FAILED TEST CASE:
+-------------------------------------------------------------------------------
+{:#?}
+",
+                    fail
+                );
+            }
+        }
+
+        assert!(failed.is_empty());
     }
 }

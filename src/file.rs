@@ -11,16 +11,18 @@ pub struct RegexFile {
 pub struct UserAgentParserEntry {
   pub regex: String,
   pub family_replacement: Option<String>,
-  pub device_replacement: Option<String>,
+  pub v1_replacement: Option<String>,
+  pub v2_replacement: Option<String>,
+  pub v3_replacement: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct OSParserEntry {
   pub regex: String,
   pub os_replacement: Option<String>,
-  pub os_v1_replacement: Option<String>,
-  pub os_v2_replacement: Option<String>,
-  pub os_v3_replacement: Option<String>,
+  pub v1_replacement: Option<String>,
+  pub v2_replacement: Option<String>,
+  pub v3_replacement: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]

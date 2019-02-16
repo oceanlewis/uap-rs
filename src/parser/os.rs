@@ -4,9 +4,9 @@ use super::*;
 pub struct Matcher {
   regex: onig::Regex,
   os_replacement: Option<String>,
-  os_v1_replacement: Option<String>,
-  os_v2_replacement: Option<String>,
-  os_v3_replacement: Option<String>,
+  v1_replacement: Option<String>,
+  v2_replacement: Option<String>,
+  v3_replacement: Option<String>,
 }
 
 impl From<OSParserEntry> for Matcher {
@@ -20,9 +20,9 @@ impl From<OSParserEntry> for Matcher {
     Matcher {
       regex: regex.expect("Regex failed to build"),
       os_replacement: entry.os_replacement,
-      os_v1_replacement: entry.os_v1_replacement,
-      os_v2_replacement: entry.os_v2_replacement,
-      os_v3_replacement: entry.os_v3_replacement,
+      v1_replacement: entry.v1_replacement,
+      v2_replacement: entry.v2_replacement,
+      v3_replacement: entry.v3_replacement,
     }
   }
 }

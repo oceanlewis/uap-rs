@@ -29,16 +29,16 @@ impl Parser for UserAgentParser {
         unimplemented!()
     }
 
-    fn parse_user_agent(&self, user_agent: &str) -> Option<UserAgent> {
-        let mut matches = dbg!(self
+    fn parse_user_agent(&self, user_agent: &str) -> UserAgent {
+        let mut matches = self
             .user_agent_matchers
             .iter()
             .filter_map(|matcher| matcher.try_parse(&user_agent))
-            .collect::<Vec<UserAgent>>());
+            .collect::<Vec<UserAgent>>();
 
-        let first = dbg!(matches.last().map(UserAgent::to_owned));
+        matches.sort();
 
-        first
+        matches.first().map(UserAgent::to_owned).unwrap_or_default()
     }
 }
 
