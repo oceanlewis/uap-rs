@@ -19,7 +19,7 @@ pub use user_agent::*;
 
 pub trait Parser {
     fn parse(&self, user_agent: &str) -> Option<Client>;
-    fn parse_device(&self, user_agent: &str) -> Option<Device>;
+    fn parse_device(&self, user_agent: &str) -> Device;
     fn parse_os(&self, user_agent: &str) -> Option<OS>;
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent;
 }
@@ -49,10 +49,12 @@ mod tests {
         }
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+
         let mut file = std::fs::File::open("./src/core/tests/test_device.yaml")
             .expect("test_device.yaml failed to load");
-        let test_cases: DeviceTestCases =
-            serde_yaml::from_reader(&mut file).expect("Failed to deserialize device test cases");
+
+        let test_cases: DeviceTestCases = serde_yaml::from_reader(&mut file)
+            .expect("Failed to deserialize device test cases");
 
         for test_case in test_cases.test_cases.into_iter() {
             let ua = parser.parse_device(&test_case.user_agent_string);
