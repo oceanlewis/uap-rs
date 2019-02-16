@@ -96,21 +96,9 @@ mod tests {
 
         fn test_eq(ua: &UserAgent, test_case: &UserAgentTestCase) -> bool {
             if ua.family != test_case.family
-                || ua.major
-                    != test_case
-                        .major
-                        .as_ref()
-                        .and_then(|v| str::parse::<usize>(v).ok())
-                || ua.minor
-                    != test_case
-                        .minor
-                        .as_ref()
-                        .and_then(|v| str::parse::<usize>(v).ok())
-                || ua.patch
-                    != test_case
-                        .patch
-                        .as_ref()
-                        .and_then(|v| str::parse::<usize>(v).ok())
+                || ua.major != test_case.major
+                || ua.minor != test_case.minor
+                || ua.patch != test_case.patch
             {
                 return false;
             }

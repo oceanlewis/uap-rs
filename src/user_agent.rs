@@ -1,9 +1,9 @@
 use super::Deserialize;
 
 pub type UserAgentFamily = String;
-pub type UserAgentMajor = usize;
-pub type UserAgentMinor = usize;
-pub type UserAgentPatch = usize;
+pub type UserAgentMajor = String;
+pub type UserAgentMinor = String;
+pub type UserAgentPatch = String;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct UserAgent {

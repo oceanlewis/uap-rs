@@ -36,7 +36,7 @@ impl Parser for UserAgentParser {
             .filter_map(|matcher| matcher.try_parse(&user_agent))
             .collect::<Vec<UserAgent>>();
 
-        matches.sort();
+        // matches.sort();
 
         matches.first().map(UserAgent::to_owned).unwrap_or_default()
     }

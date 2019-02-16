@@ -14,15 +14,6 @@ impl SubParser for Matcher {
 
     fn try_parse(&self, text: &str) -> Option<Self::Item> {
         if let Some(captures) = self.regex.captures(text) {
-            // if captures.at(0).is_none() {
-            //     return None;
-            // }
-
-            // let fam_rep = captures.at(1).map(str::to_string);
-            // let major_rep = captures.at(2).map(str::to_string);
-            // let minor_rep = captures.at(3).map(str::to_string);
-            // let patch_rep = captures.at(4).map(str::to_string);
-
             let family: String = if let Some(mut family_replacement) =
                 self.family_replacement.to_owned()
             {
@@ -31,28 +22,37 @@ impl SubParser for Matcher {
                         family_replacement.replace("$1", captures.at(1).unwrap());
                 }
 
-                Some(family_replacement)
+                family_replacement
             } else {
-                captures.at(1).map(String::from)
-            }?;
+                captures.at(1).map(str::to_string)?
+            };
+
+            fn empty_string_is_none(s: &str) -> Option<String> {
+                if !s.is_empty() {
+                    Some(s.to_string())
+                } else {
+                    None
+                }
+            }
 
             let major = self
                 .v1_replacement
                 .to_owned()
-                .or_else(|| captures.at(2).map(str::to_string))
-                .and_then(|s| str::parse::<usize>(&s).ok());
+                .or_else(|| captures.at(2).and_then(empty_string_is_none));
 
             let minor = self
                 .v2_replacement
                 .to_owned()
-                .or_else(|| captures.at(3).map(str::to_string))
-                .and_then(|s| str::parse::<usize>(&s).ok());
+                .or_else(|| captures.at(3).and_then(empty_string_is_none));
 
             let patch = self
                 .v3_replacement
                 .to_owned()
-                .or_else(|| captures.at(4).map(str::to_string))
-                .and_then(|s| str::parse::<usize>(&s).ok());
+                .or_else(|| captures.at(4).and_then(empty_string_is_none));
+
+            if patch == Some(String::from("")) {
+                println!("{:#?}", captures.at(4));
+            }
 
             let agent = UserAgent {
                 family: family.to_owned(),
