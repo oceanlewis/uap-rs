@@ -78,8 +78,10 @@ mod tests {
         }
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+
         let mut file = std::fs::File::open("./src/core/tests/test_ua.yaml")
             .expect("test_device.yaml failed to load");
+
         let test_cases: UserAgentTestCases = serde_yaml::from_reader(&mut file)
             .expect("Failed to deserialize device test cases");
 

@@ -22,7 +22,9 @@ impl Parser for UserAgentParser {
             .iter()
             .filter_map(|matcher| matcher.try_parse(&user_agent))
             .collect::<Vec<Device>>()
-            .pop().unwrap_or_default()
+            .first()
+            .map(Device::to_owned)
+            .unwrap_or_default()
     }
 
     fn parse_os(&self, user_agent: &str) -> Option<OS> {
@@ -30,15 +32,13 @@ impl Parser for UserAgentParser {
     }
 
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent {
-        let mut matches = self
-            .user_agent_matchers
+        self.user_agent_matchers
             .iter()
             .filter_map(|matcher| matcher.try_parse(&user_agent))
-            .collect::<Vec<UserAgent>>();
-
-        matches.sort();
-
-        matches.first().map(UserAgent::to_owned).unwrap_or_default()
+            .collect::<Vec<UserAgent>>()
+            .first()
+            .map(UserAgent::to_owned)
+            .unwrap_or_default()
     }
 }
 
