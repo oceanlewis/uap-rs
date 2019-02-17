@@ -13,8 +13,16 @@ pub struct UserAgentParser {
 }
 
 impl Parser for UserAgentParser {
-    fn parse(&self, user_agent: &str) -> Option<Client> {
-        unimplemented!()
+    fn parse(&self, user_agent: &str) -> Client {
+        let device = self.parse_device(&user_agent);
+        let os = self.parse_os(&user_agent);
+        let ua = self.parse_user_agent(&user_agent);
+
+        Client {
+            device: device,
+            os: os,
+            user_agent: ua,
+        }
     }
 
     fn parse_device(&self, user_agent: &str) -> Device {

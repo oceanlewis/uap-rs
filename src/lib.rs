@@ -10,16 +10,16 @@ mod os;
 mod parser;
 mod user_agent;
 
+pub use parser::UserAgentParser;
 pub use client::Client;
 pub use device::Device;
 pub use os::OS;
-pub use parser::UserAgentParser;
 pub use user_agent::UserAgent;
 
 pub(crate) use file::*;
 
 pub trait Parser {
-    fn parse(&self, user_agent: &str) -> Option<Client>;
+    fn parse(&self, user_agent: &str) -> Client;
     fn parse_device(&self, user_agent: &str) -> Device;
     fn parse_os(&self, user_agent: &str) -> OS;
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent;
