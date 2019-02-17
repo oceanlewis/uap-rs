@@ -46,15 +46,13 @@ impl SubParser for Matcher {
 
       let patch_minor: Option<String> = captures.at(5).map(str::to_string);
 
-      let os = OS {
-        family: family,
-        major: major,
-        minor: minor,
-        patch: patch,
-        patch_minor: patch_minor,
-      };
-
-      Some(os)
+      Some(OS {
+        family,
+        major,
+        minor,
+        patch,
+        patch_minor,
+      })
     } else {
       None
     }

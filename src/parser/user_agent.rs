@@ -19,7 +19,8 @@ impl SubParser for Matcher {
                     replace(&family_replacement, &captures)
                 } else {
                     captures.at(1).map(str::to_string)?
-                };
+                }
+                .to_owned();
 
             let major = self
                 .v1_replacement
@@ -36,14 +37,12 @@ impl SubParser for Matcher {
                 .to_owned()
                 .or_else(|| captures.at(4).and_then(empty_string_is_none));
 
-            let agent = UserAgent {
-                family: family.to_owned(),
-                major: major,
-                minor: minor,
-                patch: patch,
-            };
-
-            Some(agent)
+            Some(UserAgent {
+                family,
+                major,
+                minor,
+                patch,
+            })
         } else {
             None
         }

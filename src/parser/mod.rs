@@ -7,21 +7,21 @@ mod user_agent;
 
 #[derive(Debug)]
 pub struct UserAgentParser {
-    user_agent_matchers: Vec<user_agent::Matcher>,
-    os_matchers: Vec<os::Matcher>,
     device_matchers: Vec<device::Matcher>,
+    os_matchers: Vec<os::Matcher>,
+    user_agent_matchers: Vec<user_agent::Matcher>,
 }
 
 impl Parser for UserAgentParser {
     fn parse(&self, user_agent: &str) -> Client {
         let device = self.parse_device(&user_agent);
         let os = self.parse_os(&user_agent);
-        let ua = self.parse_user_agent(&user_agent);
+        let user_agent = self.parse_user_agent(&user_agent);
 
         Client {
-            device: device,
-            os: os,
-            user_agent: ua,
+            device,
+            os,
+            user_agent,
         }
     }
 
@@ -58,7 +58,7 @@ impl Parser for UserAgentParser {
 
 impl UserAgentParser {
     pub fn from_yaml(path: &str) -> UserAgentParser {
-        let mut file = std::fs::File::open(path).expect("File not found!");
+        let file = std::fs::File::open(path).expect("File not found!");
         UserAgentParser::from_file(file)
     }
 

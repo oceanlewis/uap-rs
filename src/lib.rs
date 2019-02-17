@@ -7,10 +7,11 @@ mod os;
 mod parser;
 mod user_agent;
 
+pub use parser::UserAgentParser;
+
 pub use client::Client;
 pub use device::Device;
 pub use os::OS;
-pub use parser::UserAgentParser;
 pub use user_agent::UserAgent;
 
 pub trait Parser {
@@ -20,7 +21,7 @@ pub trait Parser {
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent;
 }
 
-pub trait SubParser {
+pub(crate) trait SubParser {
     type Item;
     fn try_parse(&self, text: &str) -> Option<Self::Item>;
 }

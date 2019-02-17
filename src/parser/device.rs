@@ -8,29 +8,16 @@ pub struct Matcher {
   model_replacement: Option<String>,
 }
 
-// fn replace(replacement: &String, match: String) -> String
-// {
-// def replace(replacement: String, matcher: Matcher): String = {
-//    (if (replacement.contains("$") && matcher.groupCount() >= 1)  {
-//      (1 to matcher.groupCount()).foldLeft(replacement)((rep, i) => {
-//        val toInsert = if (matcher.group(i) ne null) matcher.group(i) else ""
-//        rep.replaceFirst("\\$" + i, Matcher.quoteReplacement(toInsert))
-//      })
-//    } else replacement).trim
-//  }
-// }
-
 impl SubParser for Matcher {
   type Item = Device;
 
   fn try_parse(&self, text: &str) -> Option<Self::Item> {
     if let Some(captures) = self.regex.captures(text) {
-      let device_family: String =
-        if let Some(device_replacement) = &self.device_replacement {
-          replace(&device_replacement, &captures)
-        } else {
-          captures.at(1).map(str::to_string)?
-        };
+      let family: String = if let Some(device_replacement) = &self.device_replacement {
+        replace(&device_replacement, &captures)
+      } else {
+        captures.at(1).map(str::to_string)?
+      };
 
       let brand: Option<String> = if let Some(brand_replacement) = &self.brand_replacement
       {
@@ -48,13 +35,11 @@ impl SubParser for Matcher {
         captures.at(3).map(str::to_string)
       };
 
-      let device = Device {
-        family: device_family,
-        brand: brand,
-        model: model,
-      };
-
-      Some(device)
+      Some(Device {
+        family,
+        brand,
+        model,
+      })
     } else {
       None
     }
