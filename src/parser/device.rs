@@ -20,32 +20,6 @@ pub struct Matcher {
 //  }
 // }
 
-fn replace(replacement: &str, captures: &onig::Captures) -> String {
-  let dollar_signs =
-    replacement.chars().fold(
-      0,
-      |instances: usize, c| {
-        if c == '$' {
-          instances + 1
-        } else {
-          instances
-        }
-      },
-    );
-
-  if replacement.contains('$') && !captures.is_empty() {
-    (1..=captures.len())
-      .fold(replacement.to_owned(), |mut state: String, i: usize| {
-        let group = captures.at(i).unwrap_or_default();
-        state.replace(&format!("${}", i), &group)
-      })
-      .trim()
-      .to_owned()
-  } else {
-    replacement.to_owned()
-  }
-}
-
 impl SubParser for Matcher {
   type Item = Device;
 
@@ -89,7 +63,7 @@ impl SubParser for Matcher {
 
 impl From<DeviceParserEntry> for Matcher {
   fn from(entry: DeviceParserEntry) -> Matcher {
-    let options = if (Some("i") == entry.regex_flag.as_ref().map(String::as_str)) {
+    let options = if Some("i") == entry.regex_flag.as_ref().map(String::as_str) {
       onig::RegexOptions::REGEX_OPTION_IGNORECASE
     } else {
       onig::RegexOptions::REGEX_OPTION_NONE

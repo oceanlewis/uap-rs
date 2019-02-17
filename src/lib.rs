@@ -1,7 +1,4 @@
-#![allow(unused)]
-
 use serde_derive::Deserialize;
-use serde_yaml;
 
 mod client;
 mod device;
@@ -15,8 +12,6 @@ pub use client::Client;
 pub use device::Device;
 pub use os::OS;
 pub use user_agent::UserAgent;
-
-pub(crate) use file::*;
 
 pub trait Parser {
     fn parse(&self, user_agent: &str) -> Client;
@@ -89,6 +84,7 @@ mod tests {
                 && os.patch_minor == test_case.patch_minor
         }
     }
+
     #[test]
     fn parse_device() {
         #[derive(Deserialize, Debug)]

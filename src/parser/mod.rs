@@ -99,3 +99,17 @@ pub(self) fn empty_string_is_none(s: &str) -> Option<String> {
         None
     }
 }
+
+pub(self) fn replace(replacement: &str, captures: &onig::Captures) -> String {
+    if replacement.contains('$') && !captures.is_empty() {
+        (1..=captures.len())
+            .fold(replacement.to_owned(), |state: String, i: usize| {
+                let group = captures.at(i).unwrap_or_default();
+                state.replace(&format!("${}", i), &group)
+            })
+            .trim()
+            .to_owned()
+    } else {
+        replacement.to_owned()
+    }
+}

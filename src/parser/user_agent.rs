@@ -14,18 +14,12 @@ impl SubParser for Matcher {
 
     fn try_parse(&self, text: &str) -> Option<Self::Item> {
         if let Some(captures) = self.regex.captures(text) {
-            let family: String = if let Some(mut family_replacement) =
-                self.family_replacement.to_owned()
-            {
-                if family_replacement.contains(r"$1") && captures.len() > 1 {
-                    family_replacement =
-                        family_replacement.replace("$1", captures.at(1).unwrap());
-                }
-
-                family_replacement
-            } else {
-                captures.at(1).map(str::to_string)?
-            };
+            let family: String =
+                if let Some(family_replacement) = &self.family_replacement {
+                    replace(&family_replacement, &captures)
+                } else {
+                    captures.at(1).map(str::to_string)?
+                };
 
             let major = self
                 .v1_replacement

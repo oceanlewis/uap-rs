@@ -20,9 +20,9 @@ pub struct UserAgentParserEntry {
 pub struct OSParserEntry {
   pub regex: String,
   pub os_replacement: Option<String>,
-  pub v1_replacement: Option<String>,
-  pub v2_replacement: Option<String>,
-  pub v3_replacement: Option<String>,
+  pub os_v1_replacement: Option<String>,
+  pub os_v2_replacement: Option<String>,
+  pub os_v3_replacement: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
