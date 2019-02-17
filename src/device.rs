@@ -4,7 +4,7 @@ pub type DeviceFamily = String;
 pub type DeviceBrand = String;
 pub type DeviceModel = String;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Device {
   pub family: DeviceFamily,
   pub brand: Option<DeviceBrand>,

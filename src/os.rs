@@ -6,11 +6,23 @@ pub type OSMinor = String;
 pub type OSPatch = String;
 pub type OSPatchMinor = String;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct OS {
-  family: OSFamily,
-  major: Option<OSMajor>,
-  minor: Option<OSMinor>,
-  patch: Option<OSPatch>,
-  patch_minor: Option<OSPatchMinor>,
+  pub family: OSFamily,
+  pub major: Option<OSMajor>,
+  pub minor: Option<OSMinor>,
+  pub patch: Option<OSPatch>,
+  pub patch_minor: Option<OSPatchMinor>,
+}
+
+impl Default for OS {
+  fn default() -> OS {
+    OS {
+      family: "Other".to_string(),
+      major: None,
+      minor: None,
+      patch: None,
+      patch_minor: None,
+    }
+  }
 }

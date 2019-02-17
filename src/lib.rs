@@ -12,15 +12,16 @@ mod user_agent;
 
 pub use client::Client;
 pub use device::Device;
-pub use file::*;
 pub use os::OS;
 pub use parser::UserAgentParser;
-pub use user_agent::*;
+pub use user_agent::UserAgent;
+
+pub(crate) use file::*;
 
 pub trait Parser {
     fn parse(&self, user_agent: &str) -> Option<Client>;
     fn parse_device(&self, user_agent: &str) -> Device;
-    fn parse_os(&self, user_agent: &str) -> Option<OS>;
+    fn parse_os(&self, user_agent: &str) -> OS;
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent;
 }
 
@@ -34,6 +35,60 @@ mod tests {
     use super::*;
     use std::fmt::Debug;
 
+    #[test]
+    fn parse_os() {
+        #[derive(Deserialize, Debug)]
+        struct OSTestCases {
+            test_cases: Vec<OSTestCase>,
+        }
+
+        #[derive(Deserialize, Debug)]
+        struct OSTestCase {
+            user_agent_string: String,
+            family: String,
+            major: Option<String>,
+            minor: Option<String>,
+            patch: Option<String>,
+            patch_minor: Option<String>,
+        }
+
+        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+
+        let mut file = std::fs::File::open("./src/core/tests/test_os.yaml")
+            .expect("test_device.yaml failed to load");
+
+        let test_cases: OSTestCases = serde_yaml::from_reader(&mut file)
+            .expect("Failed to deserialize device test cases");
+
+        let mut passed = Vec::new();
+        let mut failed = Vec::new();
+
+        for test_case in test_cases.test_cases.into_iter() {
+            let os = parser.parse_os(&test_case.user_agent_string);
+
+            if test_eq(&os, &test_case) {
+                passed.push((os, test_case));
+            } else {
+                failed.push((os, test_case));
+            }
+        }
+
+        if !failed.is_empty() {
+            for fail in failed.drain(..) {
+                print_failure(fail.0, fail.1);
+            }
+        }
+
+        assert!(failed.is_empty());
+
+        fn test_eq(os: &OS, test_case: &OSTestCase) -> bool {
+            os.family == test_case.family
+                && os.major == test_case.major
+                && os.minor == test_case.minor
+                && os.patch == test_case.patch
+                && os.patch_minor == test_case.patch_minor
+        }
+    }
     #[test]
     fn parse_device() {
         #[derive(Deserialize, Debug)]
@@ -71,8 +126,8 @@ mod tests {
         }
 
         if !failed.is_empty() {
-            for fail in failed.iter() {
-                print_failure(fail);
+            for fail in failed.drain(..) {
+                print_failure(fail.0, fail.1);
             }
         }
 
@@ -123,8 +178,8 @@ mod tests {
         }
 
         if !failed.is_empty() {
-            for fail in failed.iter() {
-                print_failure(fail);
+            for fail in failed.drain(..) {
+                print_failure(fail.0, fail.1);
             }
         }
 
@@ -138,13 +193,13 @@ mod tests {
         }
     }
 
-    fn print_failure<T: Debug>(fail: T) {
+    fn print_failure<T: Debug, F: Debug>(got: T, expected: F) {
         println!(
-            r"FAILED TEST CASE:
--------------------------------------------------------------------------------
-{:#?}
+            r" --- Failed Test Case ----
+Expected {:?}
+Got {:?}
 ",
-            fail
+            expected, got
         );
     }
 }

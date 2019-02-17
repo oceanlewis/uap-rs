@@ -27,8 +27,14 @@ impl Parser for UserAgentParser {
             .unwrap_or_default()
     }
 
-    fn parse_os(&self, user_agent: &str) -> Option<OS> {
-        unimplemented!()
+    fn parse_os(&self, user_agent: &str) -> OS {
+        self.os_matchers
+            .iter()
+            .filter_map(|matcher| matcher.try_parse(&user_agent))
+            .collect::<Vec<OS>>()
+            .first()
+            .map(OS::to_owned)
+            .unwrap_or_default()
     }
 
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent {

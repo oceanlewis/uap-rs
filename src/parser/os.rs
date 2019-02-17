@@ -9,6 +9,14 @@ pub struct Matcher {
   v3_replacement: Option<String>,
 }
 
+impl SubParser for Matcher {
+  type Item = OS;
+
+  fn try_parse(&self, text: &str) -> Option<Self::Item> {
+    unimplemented!()
+  }
+}
+
 impl From<OSParserEntry> for Matcher {
   fn from(entry: OSParserEntry) -> Matcher {
     let regex = onig::Regex::new(&entry.regex);
