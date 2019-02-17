@@ -1,4 +1,4 @@
-//! `uap_rs` is an implementation of a User Agent Parser, similar to those found as part
+//! This crate is an implementation of a User Agent Parser, similar to those found as part
 //! of the [UA-Parser Community](https://github.com/ua-parser). It tries to remain as
 //! consistent with the other implementations as possible while remaining simple and
 //! legible.
