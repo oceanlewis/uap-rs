@@ -69,7 +69,16 @@ impl UserAgentParser {
         UserAgentParser::from_file(file)
     }
 
-    /// Attempts to construct a `UserAgentParser` from a slice of raw bytes
+    /// Attempts to construct a `UserAgentParser` from a slice of raw bytes. The
+    /// intention with providing this function is to allow using the
+    /// `include_bytes!` macro to compile the `regexes.yaml` file into the
+    /// the library by a consuming application.
+    ///
+    /// ```rust
+    /// # use uap_rs::*;
+    /// let regexes = include_bytes!("../../src/core/regexes.yaml");
+    /// let parser = UserAgentParser::from_bytes(regexes);
+    /// ```
     pub fn from_bytes(bytes: &[u8]) -> UserAgentParser {
         let regex_file: RegexFile = serde_yaml::from_slice(bytes).expect("Serde Error");
         UserAgentParser::from(regex_file)
