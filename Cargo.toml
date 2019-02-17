@@ -1,6 +1,6 @@
 [package]
 name          = "uap-rs"
-version       = "0.2.0"
+version       = "0.2.1"
 description   = "A Rust implementation of the UA Parser"
 license       = "MIT"
 authors       = ["David Lewis <david@weassemble.com>"]
@@ -10,6 +10,8 @@ homepage      = "https://github.com/davidarmstronglewis/uap-rs"
 repository    = "https://github.com/davidarmstronglewis/uap-rs"
 documentation = "https://docs.rs/uap-rs/"
 readme        = "README.md"
+
+keywords      = ["user", "agent", "parser", "uap", "uaparser"]
 
 [dependencies]
 serde = "1.0.88"
