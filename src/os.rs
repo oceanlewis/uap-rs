@@ -1,28 +1,40 @@
 use super::Deserialize;
 
-pub type OSFamily = String;
-pub type OSMajor = String;
-pub type OSMinor = String;
-pub type OSPatch = String;
-pub type OSPatchMinor = String;
+pub type Family = String;
+pub type Major = String;
+pub type Minor = String;
+pub type Patch = String;
+pub type PatchMinor = String;
 
+/// Describes the `Family` as well as the `Major`, `Minor`, `Patch`, and
+/// `PatchMinor` versions of an `OS`
 #[derive(Clone, Debug, Deserialize)]
 pub struct OS {
-  pub family: OSFamily,
-  pub major: Option<OSMajor>,
-  pub minor: Option<OSMinor>,
-  pub patch: Option<OSPatch>,
-  pub patch_minor: Option<OSPatchMinor>,
+    pub family: Family,
+    pub major: Option<Major>,
+    pub minor: Option<Minor>,
+    pub patch: Option<Patch>,
+    pub patch_minor: Option<PatchMinor>,
 }
 
 impl Default for OS {
-  fn default() -> OS {
-    OS {
-      family: "Other".to_string(),
-      major: None,
-      minor: None,
-      patch: None,
-      patch_minor: None,
+    fn default() -> OS {
+        OS {
+            family: "Other".to_string(),
+            major: None,
+            minor: None,
+            patch: None,
+            patch_minor: None,
+        }
     }
-  }
+}
+
+impl std::cmp::PartialEq for OS {
+    fn eq(&self, rhs: &OS) -> bool {
+        self.family == rhs.family
+            && self.major == rhs.major
+            && self.minor == rhs.minor
+            && self.patch == rhs.patch
+            && self.patch_minor == rhs.patch_minor
+    }
 }

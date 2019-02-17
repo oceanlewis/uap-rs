@@ -1,3 +1,24 @@
+//! `uap_rs` is an implementation of a User Agent Parser, similar to those found as part
+//! of the [UA-Parser Community](https://github.com/ua-parser). It tries to remain as
+//! consistent with the other implementations as possible while remaining simple and
+//! legible.
+//!
+//! ```rust
+//! # use uap_rs::*;
+//! let ua_parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+//! let user_agent_string =
+//!     String::from("Mozilla/5.0 (X11; Linux x86_64; rv:2.0b8pre) Gecko/20101031 Firefox-4.0/4.0b8pre");
+//! let client = ua_parser.parse(&user_agent_string);
+//!
+//! let device = ua_parser.parse_device(&user_agent_string);
+//! let os = ua_parser.parse_os(&user_agent_string);
+//! let user_agent = ua_parser.parse_user_agent(&user_agent_string);
+//!
+//! assert_eq!(client.device, device);
+//! assert_eq!(client.os, os);
+//! assert_eq!(client.user_agent, user_agent);
+//! ```
+
 use serde_derive::Deserialize;
 
 mod client;

@@ -5,6 +5,8 @@ mod device;
 mod os;
 mod user_agent;
 
+/// Handles the actual parsing of a user agent string by delegating to
+/// the respective `SubParser`
 #[derive(Debug)]
 pub struct UserAgentParser {
     device_matchers: Vec<device::Matcher>,
@@ -13,6 +15,7 @@ pub struct UserAgentParser {
 }
 
 impl Parser for UserAgentParser {
+    /// Returns the full `Client` info when given a user agent string
     fn parse(&self, user_agent: &str) -> Client {
         let device = self.parse_device(&user_agent);
         let os = self.parse_os(&user_agent);
@@ -25,6 +28,7 @@ impl Parser for UserAgentParser {
         }
     }
 
+    /// Returns just the `Device` info when given a user agent string
     fn parse_device(&self, user_agent: &str) -> Device {
         self.device_matchers
             .iter()
@@ -35,6 +39,7 @@ impl Parser for UserAgentParser {
             .unwrap_or_default()
     }
 
+    /// Returns just the `OS` info when given a user agent string
     fn parse_os(&self, user_agent: &str) -> OS {
         self.os_matchers
             .iter()
@@ -45,6 +50,7 @@ impl Parser for UserAgentParser {
             .unwrap_or_default()
     }
 
+    /// Returns just the `UserAgent` info when given a user agent string
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent {
         self.user_agent_matchers
             .iter()
@@ -57,11 +63,21 @@ impl Parser for UserAgentParser {
 }
 
 impl UserAgentParser {
+    /// Attempts to construct a `UserAgentParser` from the path to a file
     pub fn from_yaml(path: &str) -> UserAgentParser {
         let file = std::fs::File::open(path).expect("File not found!");
         UserAgentParser::from_file(file)
     }
 
+    /// Attempts to construct a `UserAgentParser` from a slice of raw bytes
+    pub fn from_bytes(bytes: &[u8]) -> UserAgentParser {
+        let regex_file: RegexFile = serde_yaml::from_slice(bytes).expect("Serde Error");
+        UserAgentParser::from(regex_file)
+    }
+
+    /// Attempts to construct a `UserAgentParser` from a reference to an open
+    /// `File`. This `File` should be a the `regexes.yaml` depended on by
+    /// all the various implementations of the UA Parser library.
     pub fn from_file(file: std::fs::File) -> UserAgentParser {
         let regex_file: RegexFile = serde_yaml::from_reader(file).expect("Serde Error");
         UserAgentParser::from(regex_file)
