@@ -49,16 +49,27 @@ mod tests {
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
 
-        let mut file = std::fs::File::open("./src/core/tests/test_os.yaml")
+        let test_os = std::fs::File::open("./src/core/tests/test_os.yaml")
             .expect("test_device.yaml failed to load");
 
-        let test_cases: OSTestCases = serde_yaml::from_reader(&mut file)
+        let additional_os_tests =
+            std::fs::File::open("./src/core/test_resources/additional_os_tests.yaml")
+                .expect("additional_os_tests.yaml failed to load");
+
+        let test_cases: OSTestCases = serde_yaml::from_reader(test_os)
             .expect("Failed to deserialize device test cases");
+
+        let additional_cases: OSTestCases = serde_yaml::from_reader(additional_os_tests)
+            .expect("Failed to deserialize additional test cases");
 
         let mut passed = Vec::new();
         let mut failed = Vec::new();
 
-        for test_case in test_cases.test_cases.into_iter() {
+        for test_case in test_cases
+            .test_cases
+            .into_iter()
+            .chain(additional_cases.test_cases.into_iter())
+        {
             let os = parser.parse_os(&test_case.user_agent_string);
 
             if test_eq(&os, &test_case) {
@@ -108,10 +119,10 @@ mod tests {
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
 
-        let mut file = std::fs::File::open("./src/core/tests/test_device.yaml")
+        let file = std::fs::File::open("./src/core/tests/test_device.yaml")
             .expect("test_device.yaml failed to load");
 
-        let test_cases: DeviceTestCases = serde_yaml::from_reader(&mut file)
+        let test_cases: DeviceTestCases = serde_yaml::from_reader(file)
             .expect("Failed to deserialize device test cases");
 
         let mut passed = Vec::new();
@@ -166,16 +177,39 @@ mod tests {
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
 
-        let mut file = std::fs::File::open("./src/core/tests/test_ua.yaml")
+        let test_ua = std::fs::File::open("./src/core/tests/test_ua.yaml")
             .expect("test_device.yaml failed to load");
 
-        let test_cases: UserAgentTestCases = serde_yaml::from_reader(&mut file)
+        let firefox_user_agent_strings = std::fs::File::open(
+            "./src/core/test_resources/firefox_user_agent_strings.yaml",
+        )
+        .expect("firefox_user_agent_strings.yaml failed to load");
+
+        let opera_mini_user_agent_strings = std::fs::File::open(
+            "./src/core/test_resources/opera_mini_user_agent_strings.yaml",
+        )
+        .expect("opera_mini_user_agent_strings.yaml failed to open");
+
+        let test_cases: UserAgentTestCases = serde_yaml::from_reader(test_ua)
             .expect("Failed to deserialize device test cases");
+
+        let firefox_user_agent_test_cases: UserAgentTestCases =
+            serde_yaml::from_reader(firefox_user_agent_strings)
+                .expect("Failed deserialize firefox test cases");
+
+        let opera_mini_test_cases: UserAgentTestCases =
+            serde_yaml::from_reader(opera_mini_user_agent_strings)
+                .expect("Failed to deserialized opera mini test cases");
 
         let mut passed = Vec::new();
         let mut failed = Vec::new();
 
-        for test_case in test_cases.test_cases.into_iter() {
+        for test_case in test_cases
+            .test_cases
+            .into_iter()
+            .chain(firefox_user_agent_test_cases.test_cases.into_iter())
+            .chain(opera_mini_test_cases.test_cases.into_iter())
+        {
             let ua = parser.parse_user_agent(&test_case.user_agent_string);
 
             if test_eq(&ua, &test_case) {
