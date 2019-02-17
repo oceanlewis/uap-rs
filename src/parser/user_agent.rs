@@ -1,5 +1,10 @@
 use super::*;
 
+#[derive(Debug, Display, From)]
+pub enum Error {
+    Onig(onig::Error),
+}
+
 #[derive(Debug)]
 pub struct Matcher {
     regex: onig::Regex,
@@ -49,18 +54,16 @@ impl SubParser for Matcher {
     }
 }
 
-impl From<UserAgentParserEntry> for Matcher {
-    fn from(entry: UserAgentParserEntry) -> Matcher {
+impl Matcher {
+    pub fn try_from(entry: UserAgentParserEntry) -> Result<Matcher, Error> {
         let regex = onig::Regex::new(&entry.regex);
 
-        Matcher {
-            regex: regex.unwrap_or_else(|_| {
-                panic!("Regex:\n{:#?}\nfailed to build", entry.regex)
-            }),
+        Ok(Matcher {
+            regex: regex?,
             family_replacement: entry.family_replacement,
             v1_replacement: entry.v1_replacement,
             v2_replacement: entry.v2_replacement,
             v3_replacement: entry.v3_replacement,
-        }
+        })
     }
 }

@@ -1,5 +1,10 @@
 use super::*;
 
+#[derive(Debug, Display, From)]
+pub enum Error {
+    Onig(onig::Error),
+}
+
 #[derive(Debug)]
 pub struct Matcher {
     regex: onig::Regex,
@@ -47,8 +52,8 @@ impl SubParser for Matcher {
     }
 }
 
-impl From<DeviceParserEntry> for Matcher {
-    fn from(entry: DeviceParserEntry) -> Matcher {
+impl Matcher {
+    pub fn try_from(entry: DeviceParserEntry) -> Result<Matcher, Error> {
         let options = if Some("i") == entry.regex_flag.as_ref().map(String::as_str) {
             onig::RegexOptions::REGEX_OPTION_IGNORECASE
         } else {
@@ -58,13 +63,11 @@ impl From<DeviceParserEntry> for Matcher {
         let regex =
             onig::Regex::with_options(&entry.regex, options, onig::Syntax::default());
 
-        Matcher {
-            regex: regex.unwrap_or_else(|_| {
-                panic!("Regex:\n{:#?}\nfailed to build", entry.regex)
-            }),
+        Ok(Matcher {
+            regex: regex?,
             device_replacement: entry.device_replacement,
             brand_replacement: entry.brand_replacement,
             model_replacement: entry.model_replacement,
-        }
+        })
     }
 }

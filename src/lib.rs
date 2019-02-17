@@ -5,7 +5,7 @@
 //!
 //! ```rust
 //! # use uap_rs::*;
-//! let ua_parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+//! let ua_parser = UserAgentParser::from_yaml("./src/core/regexes.yaml").expect("Parser creation failed");
 //! let user_agent_string =
 //!     String::from("Mozilla/5.0 (X11; Linux x86_64; rv:2.0b8pre) Gecko/20101031 Firefox-4.0/4.0b8pre");
 //! let client = ua_parser.parse(&user_agent_string);
@@ -69,7 +69,8 @@ mod tests {
             patch_minor: Option<String>,
         }
 
-        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
 
         let test_os = std::fs::File::open("./src/core/tests/test_os.yaml")
             .expect("test_device.yaml failed to load");
@@ -139,7 +140,8 @@ mod tests {
             model: Option<String>,
         }
 
-        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
 
         let file = std::fs::File::open("./src/core/tests/test_device.yaml")
             .expect("test_device.yaml failed to load");
@@ -197,7 +199,8 @@ mod tests {
             patch: Option<String>,
         }
 
-        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
+        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
 
         let test_ua = std::fs::File::open("./src/core/tests/test_ua.yaml")
             .expect("test_device.yaml failed to load");
