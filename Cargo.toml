@@ -1,13 +1,18 @@
 [package]
-name = "uap-rs"
+name        = "uap-rs"
+version     = "0.1.0"
 description = "A Rust implementation of the UA Parser"
-version = "0.1.0"
-authors = ["David Lewis <david@weassemble.com>"]
+license     = "MIT"
+authors     = ["David Lewis <david@weassemble.com>"]
+
+homepage   = "https://github.com/davidarmstronglewis/uap-rs"
+repository = "https://github.com/davidarmstronglewis/uap-rs"
+
 edition = "2018"
 
 [dependencies]
-serde = "1.0.87"
+serde = "1.0.88"
 serde_yaml = "0.8.8"
-serde_derive = "1.0.87"
+serde_derive = "1.0.88"
 
 onig = "4.3.2"
