@@ -7,10 +7,10 @@ mod os;
 mod parser;
 mod user_agent;
 
-pub use parser::UserAgentParser;
 pub use client::Client;
 pub use device::Device;
 pub use os::OS;
+pub use parser::UserAgentParser;
 pub use user_agent::UserAgent;
 
 pub trait Parser {
@@ -68,9 +68,15 @@ mod tests {
             }
         }
 
+        println!(
+            "parse_os - Test Summary: {} out of {} test cases passed",
+            passed.len(),
+            passed.len() + failed.len()
+        );
+
         if !failed.is_empty() {
-            for fail in failed.drain(..) {
-                print_failure(fail.0, fail.1);
+            for fail in failed.iter() {
+                print_failure(&fail.0, &fail.1);
             }
         }
 
@@ -121,9 +127,15 @@ mod tests {
             }
         }
 
+        println!(
+            "parse_device - Test Summary: {} out of {} test cases passed",
+            passed.len(),
+            passed.len() + failed.len()
+        );
+
         if !failed.is_empty() {
-            for fail in failed.drain(..) {
-                print_failure(fail.0, fail.1);
+            for fail in failed.iter() {
+                print_failure(&fail.0, &fail.1);
             }
         }
 
@@ -173,9 +185,15 @@ mod tests {
             }
         }
 
+        println!(
+            "parse_user_agent - Test Summary: {} out of {} test cases passed",
+            passed.len(),
+            passed.len() + failed.len()
+        );
+
         if !failed.is_empty() {
-            for fail in failed.drain(..) {
-                print_failure(fail.0, fail.1);
+            for fail in failed.iter() {
+                print_failure(&fail.0, &fail.1);
             }
         }
 
@@ -189,7 +207,7 @@ mod tests {
         }
     }
 
-    fn print_failure<T: Debug, F: Debug>(got: T, expected: F) {
+    fn print_failure<T: Debug, F: Debug>(got: &T, expected: &F) {
         println!(
             r" --- Failed Test Case ----
 Expected {:?}
