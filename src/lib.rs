@@ -32,6 +32,7 @@ pub trait SubParser {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fmt::Debug;
 
     #[test]
     fn parse_device() {
@@ -44,8 +45,8 @@ mod tests {
         struct DeviceTestCase {
             user_agent_string: String,
             family: String,
-            brand: String,
-            model: String,
+            brand: Option<String>,
+            model: Option<String>,
         }
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml");
@@ -56,8 +57,31 @@ mod tests {
         let test_cases: DeviceTestCases = serde_yaml::from_reader(&mut file)
             .expect("Failed to deserialize device test cases");
 
+        let mut passed = Vec::new();
+        let mut failed = Vec::new();
+
         for test_case in test_cases.test_cases.into_iter() {
-            let ua = parser.parse_device(&test_case.user_agent_string);
+            let dev = parser.parse_device(&test_case.user_agent_string);
+
+            if test_eq(&dev, &test_case) {
+                passed.push((dev, test_case));
+            } else {
+                failed.push((dev, test_case));
+            }
+        }
+
+        if !failed.is_empty() {
+            for fail in failed.iter() {
+                print_failure(fail);
+            }
+        }
+
+        assert!(failed.is_empty());
+
+        fn test_eq(dev: &Device, test_case: &DeviceTestCase) -> bool {
+            dev.family == test_case.family
+                && dev.brand == test_case.brand
+                && dev.model == test_case.model
         }
     }
 
@@ -98,29 +122,29 @@ mod tests {
             }
         }
 
-        fn test_eq(ua: &UserAgent, test_case: &UserAgentTestCase) -> bool {
-            if ua.family != test_case.family
-                || ua.major != test_case.major
-                || ua.minor != test_case.minor
-                || ua.patch != test_case.patch
-            {
-                return false;
-            }
-            true
-        }
-
         if !failed.is_empty() {
             for fail in failed.iter() {
-                println!(
-                    r"FAILED TEST CASE:
--------------------------------------------------------------------------------
-{:#?}
-",
-                    fail
-                );
+                print_failure(fail);
             }
         }
 
         assert!(failed.is_empty());
+
+        fn test_eq(ua: &UserAgent, test_case: &UserAgentTestCase) -> bool {
+            ua.family == test_case.family
+                && ua.major == test_case.major
+                && ua.minor == test_case.minor
+                && ua.patch == test_case.patch
+        }
+    }
+
+    fn print_failure<T: Debug>(fail: T) {
+        println!(
+            r"FAILED TEST CASE:
+-------------------------------------------------------------------------------
+{:#?}
+",
+            fail
+        );
     }
 }

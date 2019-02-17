@@ -77,3 +77,11 @@ impl From<RegexFile> for UserAgentParser {
         }
     }
 }
+
+pub(self) fn empty_string_is_none(s: &str) -> Option<String> {
+    if !s.is_empty() {
+        Some(s.to_string())
+    } else {
+        None
+    }
+}

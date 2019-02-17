@@ -8,39 +8,82 @@ pub struct Matcher {
   model_replacement: Option<String>,
 }
 
+// fn replace(replacement: &String, match: String) -> String
+// {
+// def replace(replacement: String, matcher: Matcher): String = {
+//    (if (replacement.contains("$") && matcher.groupCount() >= 1)  {
+//      (1 to matcher.groupCount()).foldLeft(replacement)((rep, i) => {
+//        val toInsert = if (matcher.group(i) ne null) matcher.group(i) else ""
+//        rep.replaceFirst("\\$" + i, Matcher.quoteReplacement(toInsert))
+//      })
+//    } else replacement).trim
+//  }
+// }
+
+fn replace(replacement: &str, captures: &onig::Captures) -> String {
+  let dollar_signs =
+    replacement.chars().fold(
+      0,
+      |instances: usize, c| {
+        if c == '$' {
+          instances + 1
+        } else {
+          instances
+        }
+      },
+    );
+
+  if replacement.contains('$') && !captures.is_empty() {
+    (1..=captures.len())
+      .fold(replacement.to_owned(), |mut state: String, i: usize| {
+        let group = captures.at(i).unwrap_or_default();
+        state.replace(&format!("${}", i), &group)
+      })
+      .trim()
+      .to_owned()
+  } else {
+    replacement.to_owned()
+  }
+}
+
 impl SubParser for Matcher {
   type Item = Device;
 
   fn try_parse(&self, text: &str) -> Option<Self::Item> {
     if let Some(captures) = self.regex.captures(text) {
-      //pub struct Device {
-      //  family: DeviceFamily,
-      //  brand: Option<DeviceBrand>,
-      //  model: Option<DeviceModel>,
-      //}
-      // pub struct DeviceParserEntry {
-      //   pub regex_flag: Option<String>,
-      //   pub regex: String,
-      //   pub device_replacement: Option<String>,
-      //   pub brand_replacement: Option<String>,
-      //   pub model_replacement: Option<String>,
-      // }
+      let device_family: String =
+        if let Some(device_replacement) = &self.device_replacement {
+          replace(&device_replacement, &captures)
+        } else {
+          captures.at(1).map(str::to_string)?
+        };
 
-      // if let Some(family) = self
-      //   .family_replacement
-      //   .to_owned()
-      //   .or_else(|| captures.at(0).map(String::from))
-      // {
-      //   return Some(Device {
-      //     family: family,
-      //     major: captures.at(2).map(str::to_string),
-      //     minor: captures.at(3).map(str::to_string),
-      //     patch: captures.at(4).map(str::to_string),
-      //   });
-      // }
+      let brand: Option<String> = if let Some(brand_replacement) = &self.brand_replacement
+      {
+        let replaced = replace(&brand_replacement, &captures);
+        empty_string_is_none(&replaced)
+      } else {
+        captures.at(2).map(str::to_string)
+      };
+
+      let model: Option<String> = if let Some(model_replacement) = &self.model_replacement
+      {
+        let replaced = replace(&model_replacement, &captures);
+        empty_string_is_none(&replaced)
+      } else {
+        captures.at(3).map(str::to_string)
+      };
+
+      let device = Device {
+        family: device_family,
+        brand: brand,
+        model: model,
+      };
+
+      Some(device)
+    } else {
+      None
     }
-
-    None
   }
 }
 
@@ -51,14 +94,12 @@ impl From<DeviceParserEntry> for Matcher {
     } else {
       onig::RegexOptions::REGEX_OPTION_NONE
     };
+
     let regex = onig::Regex::with_options(&entry.regex, options, onig::Syntax::default());
 
-    if regex.is_err() {
-      println!("{:#?}", entry.regex);
-    }
-
     Matcher {
-      regex: regex.expect("Regex failed to build"),
+      regex: regex
+        .unwrap_or_else(|_| panic!("Regex:\n{:#?}\nfailed to build", entry.regex)),
       device_replacement: entry.device_replacement,
       brand_replacement: entry.brand_replacement,
       model_replacement: entry.model_replacement,

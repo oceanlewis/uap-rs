@@ -6,9 +6,9 @@ pub type DeviceModel = String;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Device {
-  family: DeviceFamily,
-  brand: Option<DeviceBrand>,
-  model: Option<DeviceModel>,
+  pub family: DeviceFamily,
+  pub brand: Option<DeviceBrand>,
+  pub model: Option<DeviceModel>,
 }
 
 impl Default for Device {

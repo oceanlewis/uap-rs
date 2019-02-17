@@ -27,14 +27,6 @@ impl SubParser for Matcher {
                 captures.at(1).map(str::to_string)?
             };
 
-            fn empty_string_is_none(s: &str) -> Option<String> {
-                if !s.is_empty() {
-                    Some(s.to_string())
-                } else {
-                    None
-                }
-            }
-
             let major = self
                 .v1_replacement
                 .to_owned()
