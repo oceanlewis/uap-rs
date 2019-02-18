@@ -27,24 +27,21 @@ impl SubParser for Matcher {
 
             let major: Option<String> =
                 if let Some(os_v1_replacement) = &self.os_v1_replacement {
-                    let replaced = replace(&os_v1_replacement, &captures);
-                    empty_string_is_none(&replaced)
+                    none_if_string_is_empty(replace(&os_v1_replacement, &captures))
                 } else {
                     captures.at(2).map(str::to_string)
                 };
 
             let minor: Option<String> =
                 if let Some(os_v2_replacement) = &self.os_v2_replacement {
-                    let replaced = replace(&os_v2_replacement, &captures);
-                    empty_string_is_none(&replaced)
+                    none_if_string_is_empty(replace(&os_v2_replacement, &captures))
                 } else {
                     captures.at(3).map(str::to_string)
                 };
 
             let patch: Option<String> =
                 if let Some(os_v3_replacement) = &self.os_v3_replacement {
-                    let replaced = replace(&os_v3_replacement, &captures);
-                    empty_string_is_none(&replaced)
+                    none_if_string_is_empty(replace(&os_v3_replacement, &captures))
                 } else {
                     captures.at(4).map(str::to_string)
                 };

@@ -139,9 +139,17 @@ impl UserAgentParser {
     }
 }
 
-pub(self) fn empty_string_is_none(s: &str) -> Option<String> {
+pub(self) fn none_if_str_is_empty(s: &str) -> Option<&str> {
     if !s.is_empty() {
-        Some(s.to_string())
+        Some(s)
+    } else {
+        None
+    }
+}
+
+pub(self) fn none_if_string_is_empty(s: String) -> Option<String> {
+    if !s.is_empty() {
+        Some(s)
     } else {
         None
     }

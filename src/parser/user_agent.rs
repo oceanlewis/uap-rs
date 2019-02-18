@@ -27,20 +27,26 @@ impl SubParser for Matcher {
                 }
                 .to_owned();
 
-            let major = self
-                .v1_replacement
-                .to_owned()
-                .or_else(|| captures.at(2).and_then(empty_string_is_none));
+            let major = self.v1_replacement.to_owned().or_else(|| {
+                captures
+                    .at(2)
+                    .and_then(none_if_str_is_empty)
+                    .map(str::to_string)
+            });
 
-            let minor = self
-                .v2_replacement
-                .to_owned()
-                .or_else(|| captures.at(3).and_then(empty_string_is_none));
+            let minor = self.v2_replacement.to_owned().or_else(|| {
+                captures
+                    .at(3)
+                    .and_then(none_if_str_is_empty)
+                    .map(str::to_string)
+            });
 
-            let patch = self
-                .v3_replacement
-                .to_owned()
-                .or_else(|| captures.at(4).and_then(empty_string_is_none));
+            let patch = self.v3_replacement.to_owned().or_else(|| {
+                captures
+                    .at(4)
+                    .and_then(none_if_str_is_empty)
+                    .map(str::to_string)
+            });
 
             Some(UserAgent {
                 family,
