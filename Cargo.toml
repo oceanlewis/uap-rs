@@ -1,6 +1,6 @@
 [package]
 name          = "uap-rs"
-version       = "0.2.1"
+version       = "0.2.2"
 description   = "A Rust implementation of the UA Parser"
 license       = "MIT"
 authors       = ["David Lewis <david@weassemble.com>"]
