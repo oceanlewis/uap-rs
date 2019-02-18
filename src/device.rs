@@ -5,7 +5,7 @@ pub type Brand = String;
 pub type Model = String;
 
 /// Describes the `Family`, `Brand` and `Model` of a `Device`
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Device {
     pub family: Family,
     pub brand: Option<Brand>,
@@ -19,11 +19,5 @@ impl Default for Device {
             brand: None,
             model: None,
         }
-    }
-}
-
-impl std::cmp::PartialEq for Device {
-    fn eq(&self, rhs: &Device) -> bool {
-        self.family == rhs.family && self.brand == rhs.brand && self.model == rhs.model
     }
 }

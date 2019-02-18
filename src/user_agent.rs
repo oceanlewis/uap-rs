@@ -7,7 +7,7 @@ pub type Patch = String;
 
 /// Describes the `Family` as well as the `Major`, `Minor`, and `Patch` versions
 /// of a `UserAgent` client
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct UserAgent {
     pub family: Family,
     pub major: Option<Major>,
@@ -23,14 +23,5 @@ impl Default for UserAgent {
             minor: None,
             patch: None,
         }
-    }
-}
-
-impl std::cmp::PartialEq for UserAgent {
-    fn eq(&self, rhs: &UserAgent) -> bool {
-        self.family == rhs.family
-            && self.major == rhs.major
-            && self.minor == rhs.minor
-            && self.patch == rhs.patch
     }
 }

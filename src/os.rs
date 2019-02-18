@@ -8,7 +8,7 @@ pub type PatchMinor = String;
 
 /// Describes the `Family` as well as the `Major`, `Minor`, `Patch`, and
 /// `PatchMinor` versions of an `OS`
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct OS {
     pub family: Family,
     pub major: Option<Major>,
@@ -26,15 +26,5 @@ impl Default for OS {
             patch: None,
             patch_minor: None,
         }
-    }
-}
-
-impl std::cmp::PartialEq for OS {
-    fn eq(&self, rhs: &OS) -> bool {
-        self.family == rhs.family
-            && self.major == rhs.major
-            && self.minor == rhs.minor
-            && self.patch == rhs.patch
-            && self.patch_minor == rhs.patch_minor
     }
 }
