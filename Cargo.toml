@@ -1,5 +1,5 @@
 [package]
-name          = "uap-rs"
+name          = "uaparser"
 version       = "0.2.2"
 description   = "A Rust implementation of the UA Parser"
 license       = "MIT"
