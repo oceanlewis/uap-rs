@@ -97,7 +97,7 @@ impl UserAgentParser {
     /// the library by a consuming application.
     ///
     /// ```rust
-    /// # use uap_rs::*;
+    /// # use uaparser::*;
     /// let regexes = include_bytes!("../../src/core/regexes.yaml");
     /// let parser = UserAgentParser::from_bytes(regexes);
     /// ```

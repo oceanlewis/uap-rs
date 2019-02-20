@@ -4,7 +4,7 @@
 //! and legible.
 //!
 //! ```rust
-//! # use uap_rs::*;
+//! # use uaparser::*;
 //! let ua_parser = UserAgentParser::from_yaml("./src/core/regexes.yaml").expect("Parser creation failed");
 //! let user_agent_string =
 //!     String::from("Mozilla/5.0 (X11; Linux x86_64; rv:2.0b8pre) Gecko/20101031 Firefox-4.0/4.0b8pre");
