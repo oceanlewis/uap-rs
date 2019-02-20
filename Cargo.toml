@@ -13,6 +13,11 @@ readme        = "README.md"
 
 keywords      = ["user", "agent", "parser", "uap", "uaparser"]
 
+[features]
+default = ["default-impl"]
+
+default-impl = []
+
 [dependencies]
 serde = "1.0.88"
 serde_yaml = "0.8.8"

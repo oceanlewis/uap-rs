@@ -139,6 +139,13 @@ impl UserAgentParser {
     }
 }
 
+#[cfg(feature = "default-impl")]
+impl Default for UserAgentParser {
+    fn default() -> UserAgentParser {
+        UserAgentParser::from_bytes(include_bytes!("../../src/core/regexes.yaml")).expect("Failed to create UserAgentParser from UA standard YAML file.")
+    }
+}
+
 pub(self) fn none_if_str_is_empty(s: &str) -> Option<&str> {
     if !s.is_empty() {
         Some(s)
