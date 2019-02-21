@@ -30,21 +30,21 @@ impl SubParser for Matcher {
             let major = self.v1_replacement.to_owned().or_else(|| {
                 captures
                     .at(2)
-                    .and_then(none_if_str_is_empty)
+                    .and_then(none_if_empty)
                     .map(str::to_string)
             });
 
             let minor = self.v2_replacement.to_owned().or_else(|| {
                 captures
                     .at(3)
-                    .and_then(none_if_str_is_empty)
+                    .and_then(none_if_empty)
                     .map(str::to_string)
             });
 
             let patch = self.v3_replacement.to_owned().or_else(|| {
                 captures
                     .at(4)
-                    .and_then(none_if_str_is_empty)
+                    .and_then(none_if_empty)
                     .map(str::to_string)
             });
 

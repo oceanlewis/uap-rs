@@ -27,14 +27,14 @@ impl SubParser for Matcher {
 
             let brand: Option<String> =
                 if let Some(brand_replacement) = &self.brand_replacement {
-                    none_if_string_is_empty(replace(&brand_replacement, &captures))
+                    none_if_empty(replace(&brand_replacement, &captures))
                 } else {
                     captures.at(2).map(str::to_string)
                 };
 
             let model: Option<String> =
                 if let Some(model_replacement) = &self.model_replacement {
-                    none_if_string_is_empty(replace(&model_replacement, &captures))
+                    none_if_empty(replace(&model_replacement, &captures))
                 } else {
                     captures.at(3).map(str::to_string)
                 };
