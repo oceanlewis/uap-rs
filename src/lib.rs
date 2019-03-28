@@ -28,7 +28,7 @@ mod os;
 mod parser;
 mod user_agent;
 
-pub use parser::UserAgentParser;
+pub use parser::{Error, UserAgentParser};
 
 pub use client::Client;
 pub use device::Device;
