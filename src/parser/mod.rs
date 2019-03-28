@@ -55,9 +55,8 @@ impl Parser for UserAgentParser {
         self.device_matchers
             .iter()
             .filter_map(|matcher| matcher.try_parse(&user_agent))
-            .collect::<Vec<Device>>()
-            .first()
-            .map(Device::to_owned)
+            .take(1)
+            .next()
             .unwrap_or_default()
     }
 
@@ -66,9 +65,8 @@ impl Parser for UserAgentParser {
         self.os_matchers
             .iter()
             .filter_map(|matcher| matcher.try_parse(&user_agent))
-            .collect::<Vec<OS>>()
-            .first()
-            .map(OS::to_owned)
+            .take(1)
+            .next()
             .unwrap_or_default()
     }
 
@@ -77,9 +75,8 @@ impl Parser for UserAgentParser {
         self.user_agent_matchers
             .iter()
             .filter_map(|matcher| matcher.try_parse(&user_agent))
-            .collect::<Vec<UserAgent>>()
-            .first()
-            .map(UserAgent::to_owned)
+            .take(1)
+            .next()
             .unwrap_or_default()
     }
 }
