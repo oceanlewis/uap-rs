@@ -2,12 +2,12 @@ use super::*;
 
 #[derive(Debug, Display, From)]
 pub enum Error {
-    Onig(onig::Error),
+    Regex(fancy_regex::Error),
 }
 
 #[derive(Debug)]
 pub struct Matcher {
-    regex: onig::Regex,
+    regex: fancy_regex::Regex,
     family_replacement: Option<String>,
     v1_replacement: Option<String>,
     v2_replacement: Option<String>,
@@ -18,34 +18,41 @@ impl SubParser for Matcher {
     type Item = UserAgent;
 
     fn try_parse(&self, text: &str) -> Option<Self::Item> {
-        if let Some(captures) = self.regex.captures(text) {
+        if let Ok(Some(captures)) = self.regex.captures(text) {
             let family: String =
                 if let Some(family_replacement) = &self.family_replacement {
                     replace(&family_replacement, &captures)
                 } else {
-                    captures.at(1).map(str::to_string)?
+                    captures
+                        .get(1)
+                        .map(|x| x.as_str())
+                        .and_then(none_if_empty)
+                        .map(ToString::to_string)?
                 }
                 .to_owned();
 
             let major = self.v1_replacement.to_owned().or_else(|| {
                 captures
-                    .at(2)
+                    .get(2)
+                    .map(|x| x.as_str())
                     .and_then(none_if_empty)
-                    .map(str::to_string)
+                    .map(ToString::to_string)
             });
 
             let minor = self.v2_replacement.to_owned().or_else(|| {
                 captures
-                    .at(3)
+                    .get(3)
+                    .map(|x| x.as_str())
                     .and_then(none_if_empty)
-                    .map(str::to_string)
+                    .map(ToString::to_string)
             });
 
             let patch = self.v3_replacement.to_owned().or_else(|| {
                 captures
-                    .at(4)
+                    .get(4)
+                    .map(|x| x.as_str())
                     .and_then(none_if_empty)
-                    .map(str::to_string)
+                    .map(ToString::to_string)
             });
 
             Some(UserAgent {
@@ -62,7 +69,9 @@ impl SubParser for Matcher {
 
 impl Matcher {
     pub fn try_from(entry: UserAgentParserEntry) -> Result<Matcher, Error> {
-        let regex = onig::Regex::new(&entry.regex);
+        let regex = fancy_regex::RegexBuilder::new(&entry.regex)
+            .size_limit(20 * (1 << 20))
+            .build();
 
         Ok(Matcher {
             regex: regex?,
