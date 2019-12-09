@@ -70,7 +70,7 @@ impl SubParser for Matcher {
 impl Matcher {
     pub fn try_from(entry: UserAgentParserEntry) -> Result<Matcher, Error> {
         let regex = fancy_regex::RegexBuilder::new(&entry.regex)
-            .size_limit(20 * (1 << 20))
+            .delegate_size_limit(20 * (1 << 20))
             .build();
 
         Ok(Matcher {

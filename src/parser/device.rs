@@ -67,7 +67,7 @@ impl Matcher {
                 entry.regex.to_owned()
             };
         let regex = fancy_regex::RegexBuilder::new(&regex_with_flags)
-            .size_limit(20 * (1 << 20))
+            .delegate_size_limit(20 * (1 << 20))
             .build();
 
         Ok(Matcher {
