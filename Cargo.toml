@@ -14,8 +14,8 @@ readme        = "README.md"
 keywords      = ["user", "agent", "parser", "uap", "uaparser"]
 
 [dependencies]
-serde = "1.0.99"
-serde_yaml = "0.8.9"
-serde_derive = "1.0.99"
+serde = "1.0.103"
+serde_yaml = "0.8.11"
+serde_derive = "1.0.103"
 derive_more = "0.99.2"
 fancy-regex = "0.3.1"
