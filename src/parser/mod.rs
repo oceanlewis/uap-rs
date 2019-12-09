@@ -144,11 +144,11 @@ pub(self) fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
     }
 }
 
-pub(self) fn replace(replacement: &str, captures: &onig::Captures) -> String {
-    if replacement.contains('$') && !captures.is_empty() {
+pub(self) fn replace(replacement: &str, captures: &fancy_regex::Captures) -> String {
+    if replacement.contains('$') && captures.len() > 0 {
         (1..=captures.len())
             .fold(replacement.to_owned(), |state: String, i: usize| {
-                let group = captures.at(i).unwrap_or_default();
+                let group = captures.get(i).map(|x| x.as_str()).unwrap_or("");
                 state.replace(&format!("${}", i), &group)
             })
             .trim()
