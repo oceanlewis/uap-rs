@@ -1,6 +1,6 @@
 [package]
 name          = "uaparser"
-version       = "0.3.4"
+version       = "0.4.0"
 description   = "A Rust implementation of the UA Parser"
 license       = "MIT"
 authors       = ["David Lewis <david@armstronglewis.com>"]
@@ -14,8 +14,8 @@ readme        = "README.md"
 keywords      = ["user", "agent", "parser", "uap", "uaparser"]
 
 [dependencies]
-serde = "1.0.106"
-serde_yaml = "0.8.11"
-serde_derive = "1.0.106"
-derive_more = "0.99.5"
-fancy-regex = "0.3.3"
+serde = "1.0.110"
+serde_yaml = "0.8.12"
+serde_derive = "1.0.110"
+derive_more = "0.99.7"
+fancy-regex = "0.3.5"
