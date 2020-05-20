@@ -8,7 +8,7 @@ pub type PatchMinor = String;
 
 /// Describes the `Family` as well as the `Major`, `Minor`, `Patch`, and
 /// `PatchMinor` versions of an `OS`
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct OS {
     pub family: Family,
     pub major: Option<Major>,

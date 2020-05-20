@@ -7,7 +7,7 @@ pub type Patch = String;
 
 /// Describes the `Family` as well as the `Major`, `Minor`, and `Patch` versions
 /// of a `UserAgent` client
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct UserAgent {
     pub family: Family,
     pub major: Option<Major>,
