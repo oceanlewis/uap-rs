@@ -1,5 +1,7 @@
+use std::borrow::Cow;
+
 use derive_more::{Display, From};
-use serde_yaml;
+use regex::Regex;
 
 use super::{
     client::Client,
@@ -39,9 +41,9 @@ pub struct UserAgentParser {
 impl Parser for UserAgentParser {
     /// Returns the full `Client` info when given a user agent string
     fn parse(&self, user_agent: &str) -> Client {
-        let device = self.parse_device(&user_agent);
-        let os = self.parse_os(&user_agent);
-        let user_agent = self.parse_user_agent(&user_agent);
+        let device = self.parse_device(user_agent);
+        let os = self.parse_os(user_agent);
+        let user_agent = self.parse_user_agent(user_agent);
 
         Client {
             device,
@@ -54,7 +56,7 @@ impl Parser for UserAgentParser {
     fn parse_device(&self, user_agent: &str) -> Device {
         self.device_matchers
             .iter()
-            .filter_map(|matcher| matcher.try_parse(&user_agent))
+            .filter_map(|matcher| matcher.try_parse(user_agent))
             .take(1)
             .next()
             .unwrap_or_default()
@@ -64,7 +66,7 @@ impl Parser for UserAgentParser {
     fn parse_os(&self, user_agent: &str) -> OS {
         self.os_matchers
             .iter()
-            .filter_map(|matcher| matcher.try_parse(&user_agent))
+            .filter_map(|matcher| matcher.try_parse(user_agent))
             .take(1)
             .next()
             .unwrap_or_default()
@@ -74,7 +76,7 @@ impl Parser for UserAgentParser {
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent {
         self.user_agent_matchers
             .iter()
-            .filter_map(|matcher| matcher.try_parse(&user_agent))
+            .filter_map(|matcher| matcher.try_parse(user_agent))
             .take(1)
             .next()
             .unwrap_or_default()
@@ -85,7 +87,7 @@ impl UserAgentParser {
     /// Attempts to construct a `UserAgentParser` from the path to a file
     pub fn from_yaml(path: &str) -> Result<UserAgentParser, Error> {
         let file = std::fs::File::open(path)?;
-        Ok(UserAgentParser::from_file(file)?)
+        UserAgentParser::from_file(file)
     }
 
     /// Attempts to construct a `UserAgentParser` from a slice of raw bytes. The
@@ -100,7 +102,7 @@ impl UserAgentParser {
     /// ```
     pub fn from_bytes(bytes: &[u8]) -> Result<UserAgentParser, Error> {
         let regex_file: RegexFile = serde_yaml::from_slice(bytes)?;
-        Ok(UserAgentParser::try_from(regex_file)?)
+        UserAgentParser::try_from(regex_file)
     }
 
     /// Attempts to construct a `UserAgentParser` from a reference to an open
@@ -108,7 +110,7 @@ impl UserAgentParser {
     /// all the various implementations of the UA Parser library.
     pub fn from_file(file: std::fs::File) -> Result<UserAgentParser, Error> {
         let regex_file: RegexFile = serde_yaml::from_reader(file)?;
-        Ok(UserAgentParser::try_from(regex_file)?)
+        UserAgentParser::try_from(regex_file)
     }
 
     pub fn try_from(regex_file: RegexFile) -> Result<UserAgentParser, Error> {
@@ -144,16 +146,24 @@ pub(self) fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
     }
 }
 
-pub(self) fn replace(replacement: &str, captures: &fancy_regex::Captures) -> String {
+pub(self) fn replace(replacement: &str, captures: &regex::Captures) -> String {
     if replacement.contains('$') && captures.len() > 0 {
         (1..=captures.len())
             .fold(replacement.to_owned(), |state: String, i: usize| {
                 let group = captures.get(i).map(|x| x.as_str()).unwrap_or("");
-                state.replace(&format!("${}", i), &group)
+                state.replace(&format!("${}", i), group)
             })
             .trim()
             .to_owned()
     } else {
         replacement.to_owned()
     }
+}
+
+lazy_static::lazy_static! {
+    static ref INVALID_ESCAPES: Regex = Regex::new("\\\\([! /])").unwrap();
+}
+
+fn clean_escapes(pattern: &str) -> Cow<'_, str> {
+    INVALID_ESCAPES.replace_all(pattern, "$1")
 }
