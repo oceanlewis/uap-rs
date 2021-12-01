@@ -41,14 +41,10 @@ pub struct UserAgentParser {
 impl Parser for UserAgentParser {
     /// Returns the full `Client` info when given a user agent string
     fn parse(&self, user_agent: &str) -> Client {
-        let device = self.parse_device(user_agent);
-        let os = self.parse_os(user_agent);
-        let user_agent = self.parse_user_agent(user_agent);
-
         Client {
-            device,
-            os,
-            user_agent,
+            device: self.parse_device(user_agent),
+            os: self.parse_os(user_agent),
+            user_agent: self.parse_user_agent(user_agent),
         }
     }
 
@@ -56,9 +52,7 @@ impl Parser for UserAgentParser {
     fn parse_device(&self, user_agent: &str) -> Device {
         self.device_matchers
             .iter()
-            .filter_map(|matcher| matcher.try_parse(user_agent))
-            .take(1)
-            .next()
+            .find_map(|matcher| matcher.try_parse(user_agent))
             .unwrap_or_default()
     }
 
@@ -66,9 +60,7 @@ impl Parser for UserAgentParser {
     fn parse_os(&self, user_agent: &str) -> OS {
         self.os_matchers
             .iter()
-            .filter_map(|matcher| matcher.try_parse(user_agent))
-            .take(1)
-            .next()
+            .find_map(|matcher| matcher.try_parse(user_agent))
             .unwrap_or_default()
     }
 
@@ -76,9 +68,7 @@ impl Parser for UserAgentParser {
     fn parse_user_agent(&self, user_agent: &str) -> UserAgent {
         self.user_agent_matchers
             .iter()
-            .filter_map(|matcher| matcher.try_parse(user_agent))
-            .take(1)
-            .next()
+            .find_map(|matcher| matcher.try_parse(user_agent))
             .unwrap_or_default()
     }
 }
@@ -114,19 +104,20 @@ impl UserAgentParser {
     }
 
     pub fn try_from(regex_file: RegexFile) -> Result<UserAgentParser, Error> {
-        let mut device_matchers = Vec::new();
-        let mut os_matchers = Vec::new();
-        let mut user_agent_matchers = Vec::new();
+        let mut device_matchers = Vec::with_capacity(regex_file.device_parsers.len());
+        let mut os_matchers = Vec::with_capacity(regex_file.os_parsers.len());
+        let mut user_agent_matchers =
+            Vec::with_capacity(regex_file.user_agent_parsers.len());
 
-        for parser in regex_file.device_parsers.into_iter() {
+        for parser in regex_file.device_parsers {
             device_matchers.push(device::Matcher::try_from(parser)?);
         }
 
-        for parser in regex_file.os_parsers.into_iter() {
+        for parser in regex_file.os_parsers {
             os_matchers.push(os::Matcher::try_from(parser)?);
         }
 
-        for parser in regex_file.user_agent_parsers.into_iter() {
+        for parser in regex_file.user_agent_parsers {
             user_agent_matchers.push(user_agent::Matcher::try_from(parser)?);
         }
 
@@ -148,13 +139,9 @@ pub(self) fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
 
 pub(self) fn replace(replacement: &str, captures: &regex::Captures) -> String {
     if replacement.contains('$') && captures.len() > 0 {
-        (1..=captures.len())
-            .fold(replacement.to_owned(), |state: String, i: usize| {
-                let group = captures.get(i).map(|x| x.as_str()).unwrap_or("");
-                state.replace(&format!("${}", i), group)
-            })
-            .trim()
-            .to_owned()
+        let mut target = String::new();
+        captures.expand(replacement, &mut target);
+        target.trim().to_owned()
     } else {
         replacement.to_owned()
     }
