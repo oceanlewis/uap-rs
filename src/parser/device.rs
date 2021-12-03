@@ -17,6 +17,10 @@ impl SubParser for Matcher {
     type Item = Device;
 
     fn try_parse(&self, text: &str) -> Option<Self::Item> {
+        if !self.regex.is_match(text) {
+            return None;
+        }
+
         if let Some(captures) = self.regex.captures(text) {
             let family: String =
                 if let Some(device_replacement) = &self.device_replacement {

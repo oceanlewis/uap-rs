@@ -18,6 +18,10 @@ impl SubParser for Matcher {
     type Item = OS;
 
     fn try_parse(&self, text: &str) -> Option<Self::Item> {
+        if !self.regex.is_match(text) {
+            return None;
+        }
+
         if let Some(captures) = self.regex.captures(text) {
             let family: String = if let Some(os_replacement) = &self.os_replacement {
                 replace(os_replacement, &captures)
