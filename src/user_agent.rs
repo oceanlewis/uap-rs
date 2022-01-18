@@ -1,4 +1,4 @@
-use super::Deserialize;
+use super::{Deserialize, Serialize};
 
 pub type Family = String;
 pub type Major = String;
@@ -7,7 +7,7 @@ pub type Patch = String;
 
 /// Describes the `Family` as well as the `Major`, `Minor`, and `Patch` versions
 /// of a `UserAgent` client
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Serialize, Eq, Hash, PartialEq)]
 pub struct UserAgent {
     pub family: Family,
     pub major: Option<Major>,

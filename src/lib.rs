@@ -19,7 +19,7 @@
 //! assert_eq!(client.user_agent, user_agent);
 //! ```
 
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
 mod client;
 mod device;
