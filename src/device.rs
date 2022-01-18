@@ -1,11 +1,11 @@
-use super::Deserialize;
+use super::{Deserialize, Serialize};
 
 pub type Family = String;
 pub type Brand = String;
 pub type Model = String;
 
 /// Describes the `Family`, `Brand` and `Model` of a `Device`
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, Hash, PartialEq)]
 pub struct Device {
     pub family: Family,
     pub brand: Option<Brand>,
