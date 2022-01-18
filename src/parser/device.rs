@@ -2,12 +2,12 @@ use super::*;
 
 #[derive(Debug, Display, From)]
 pub enum Error {
-    Regex(fancy_regex::Error),
+    Regex(regex::Error),
 }
 
 #[derive(Debug)]
 pub struct Matcher {
-    regex: fancy_regex::Regex,
+    regex: regex::Regex,
     device_replacement: Option<String>,
     brand_replacement: Option<String>,
     model_replacement: Option<String>,
@@ -17,10 +17,10 @@ impl SubParser for Matcher {
     type Item = Device;
 
     fn try_parse(&self, text: &str) -> Option<Self::Item> {
-        if let Ok(Some(captures)) = self.regex.captures(text) {
+        if let Some(captures) = self.regex.captures(text) {
             let family: String =
                 if let Some(device_replacement) = &self.device_replacement {
-                    replace(&device_replacement, &captures)
+                    replace(device_replacement, &captures)
                 } else {
                     captures
                         .get(1)
@@ -31,14 +31,14 @@ impl SubParser for Matcher {
 
             let brand: Option<String> =
                 if let Some(brand_replacement) = &self.brand_replacement {
-                    none_if_empty(replace(&brand_replacement, &captures))
+                    none_if_empty(replace(brand_replacement, &captures))
                 } else {
                     None
                 };
 
             let model: Option<String> =
                 if let Some(model_replacement) = &self.model_replacement {
-                    none_if_empty(replace(&model_replacement, &captures))
+                    none_if_empty(replace(model_replacement, &captures))
                 } else {
                     captures
                         .get(1)
@@ -64,10 +64,10 @@ impl Matcher {
             if !entry.regex_flag.as_ref().map_or(true, String::is_empty) {
                 format!("(?{}){}", entry.regex_flag.unwrap_or_default(), entry.regex)
             } else {
-                entry.regex.to_owned()
+                entry.regex
             };
-        let regex = fancy_regex::RegexBuilder::new(&regex_with_flags)
-            .delegate_size_limit(20 * (1 << 20))
+        let regex = regex::RegexBuilder::new(&clean_escapes(&regex_with_flags))
+            .size_limit(20 * (1 << 20))
             .build();
 
         Ok(Matcher {
