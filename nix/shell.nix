@@ -9,5 +9,6 @@ mkShell {
       extensions = [ "rust-src" ];
     })
     cargo-criterion
+    gnuplot
   ];
 }
