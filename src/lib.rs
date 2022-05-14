@@ -19,6 +19,12 @@
 //! assert_eq!(client.user_agent, user_agent);
 //! ```
 
+#![deny(clippy::all)]
+#![deny(clippy::pedantic)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::wildcard_imports)]
+#![allow(clippy::module_name_repetitions)]
+
 use serde_derive::{Deserialize, Serialize};
 
 mod client;
@@ -36,37 +42,37 @@ pub use os::OS;
 pub use user_agent::UserAgent;
 
 pub trait Parser {
-    fn parse(&self, user_agent: &str) -> Client;
-    fn parse_device(&self, user_agent: &str) -> Device;
-    fn parse_os(&self, user_agent: &str) -> OS;
-    fn parse_user_agent(&self, user_agent: &str) -> UserAgent;
+    fn parse<'a>(&self, user_agent: &'a str) -> Client<'a>;
+    fn parse_device<'a>(&self, user_agent: &'a str) -> Device<'a>;
+    fn parse_os<'a>(&self, user_agent: &'a str) -> OS<'a>;
+    fn parse_user_agent<'a>(&self, user_agent: &'a str) -> UserAgent<'a>;
 }
 
-pub(crate) trait SubParser {
+pub(crate) trait SubParser<'a> {
     type Item;
-    fn try_parse(&self, text: &str) -> Option<Self::Item>;
+    fn try_parse(&self, text: &'a str) -> Option<Self::Item>;
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fmt::Debug;
+    use std::{borrow::Cow, fmt::Debug};
 
     #[test]
     fn parse_os() {
         #[derive(Deserialize, Debug)]
-        struct OSTestCases {
-            test_cases: Vec<OSTestCase>,
+        struct OSTestCases<'a> {
+            test_cases: Vec<OSTestCase<'a>>,
         }
 
         #[derive(Deserialize, Debug)]
-        struct OSTestCase {
-            user_agent_string: String,
-            family: String,
-            major: Option<String>,
-            minor: Option<String>,
-            patch: Option<String>,
-            patch_minor: Option<String>,
+        struct OSTestCase<'a> {
+            user_agent_string: Cow<'a, str>,
+            family: Cow<'a, str>,
+            major: Option<Cow<'a, str>>,
+            minor: Option<Cow<'a, str>>,
+            patch: Option<Cow<'a, str>>,
+            patch_minor: Option<Cow<'a, str>>,
         }
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
@@ -85,27 +91,27 @@ mod tests {
         let additional_cases: OSTestCases = serde_yaml::from_reader(additional_os_tests)
             .expect("Failed to deserialize additional test cases");
 
-        let mut passed = Vec::new();
+        let mut total_passed = 0;
         let mut failed = Vec::new();
 
         for test_case in test_cases
             .test_cases
-            .into_iter()
-            .chain(additional_cases.test_cases.into_iter())
+            .iter()
+            .chain(additional_cases.test_cases.iter())
         {
             let os = parser.parse_os(&test_case.user_agent_string);
 
             if test_eq(&os, &test_case) {
-                passed.push((os, test_case));
+                total_passed += 1;
             } else {
-                failed.push((os, test_case));
+                failed.push((os.clone(), test_case));
             }
         }
 
         println!(
             "parse_os - Test Summary: {} out of {} test cases passed",
-            passed.len(),
-            passed.len() + failed.len()
+            total_passed,
+            total_passed + failed.len()
         );
 
         if !failed.is_empty() {
@@ -128,16 +134,16 @@ mod tests {
     #[test]
     fn parse_device() {
         #[derive(Deserialize, Debug)]
-        struct DeviceTestCases {
-            test_cases: Vec<DeviceTestCase>,
+        struct DeviceTestCases<'a> {
+            test_cases: Vec<DeviceTestCase<'a>>,
         }
 
         #[derive(Deserialize, Debug)]
-        struct DeviceTestCase {
-            user_agent_string: String,
-            family: String,
-            brand: Option<String>,
-            model: Option<String>,
+        struct DeviceTestCase<'a> {
+            user_agent_string: Cow<'a, str>,
+            family: Cow<'a, str>,
+            brand: Option<Cow<'a, str>>,
+            model: Option<Cow<'a, str>>,
         }
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
@@ -149,14 +155,14 @@ mod tests {
         let test_cases: DeviceTestCases = serde_yaml::from_reader(file)
             .expect("Failed to deserialize device test cases");
 
-        let mut passed = Vec::new();
+        let mut total_passed = 0;
         let mut failed = Vec::new();
 
-        for test_case in test_cases.test_cases.into_iter() {
+        for test_case in &test_cases.test_cases {
             let dev = parser.parse_device(&test_case.user_agent_string);
 
             if test_eq(&dev, &test_case) {
-                passed.push((dev, test_case));
+                total_passed += 1;
             } else {
                 failed.push((dev, test_case));
             }
@@ -164,8 +170,8 @@ mod tests {
 
         println!(
             "parse_device - Test Summary: {} out of {} test cases passed",
-            passed.len(),
-            passed.len() + failed.len()
+            total_passed,
+            total_passed + failed.len()
         );
 
         if !failed.is_empty() {
@@ -186,17 +192,17 @@ mod tests {
     #[test]
     fn parse_user_agent() {
         #[derive(Deserialize, Debug)]
-        struct UserAgentTestCases {
-            test_cases: Vec<UserAgentTestCase>,
+        struct UserAgentTestCases<'a> {
+            test_cases: Vec<UserAgentTestCase<'a>>,
         }
 
         #[derive(Deserialize, Debug)]
-        struct UserAgentTestCase {
-            user_agent_string: String,
-            family: String,
-            major: Option<String>,
-            minor: Option<String>,
-            patch: Option<String>,
+        struct UserAgentTestCase<'a> {
+            user_agent_string: Cow<'a, str>,
+            family: Cow<'a, str>,
+            major: Option<Cow<'a, str>>,
+            minor: Option<Cow<'a, str>>,
+            patch: Option<Cow<'a, str>>,
         }
 
         let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
@@ -226,19 +232,19 @@ mod tests {
             serde_yaml::from_reader(opera_mini_user_agent_strings)
                 .expect("Failed to deserialized opera mini test cases");
 
-        let mut passed = Vec::new();
+        let mut total_passed = 0;
         let mut failed = Vec::new();
 
         for test_case in test_cases
             .test_cases
-            .into_iter()
-            .chain(firefox_user_agent_test_cases.test_cases.into_iter())
-            .chain(opera_mini_test_cases.test_cases.into_iter())
+            .iter()
+            .chain(firefox_user_agent_test_cases.test_cases.iter())
+            .chain(opera_mini_test_cases.test_cases.iter())
         {
             let ua = parser.parse_user_agent(&test_case.user_agent_string);
 
             if test_eq(&ua, &test_case) {
-                passed.push((ua, test_case));
+                total_passed += 1;
             } else {
                 failed.push((ua, test_case));
             }
@@ -246,8 +252,8 @@ mod tests {
 
         println!(
             "parse_user_agent - Test Summary: {} out of {} test cases passed",
-            passed.len(),
-            passed.len() + failed.len()
+            total_passed,
+            total_passed + failed.len()
         );
 
         if !failed.is_empty() {

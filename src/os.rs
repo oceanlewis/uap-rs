@@ -1,26 +1,22 @@
-use super::{Deserialize, Serialize};
+use std::borrow::Cow;
 
-pub type Family = String;
-pub type Major = String;
-pub type Minor = String;
-pub type Patch = String;
-pub type PatchMinor = String;
+use super::{Deserialize, Serialize};
 
 /// Describes the `Family` as well as the `Major`, `Minor`, `Patch`, and
 /// `PatchMinor` versions of an `OS`
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, Hash, PartialEq)]
-pub struct OS {
-    pub family: Family,
-    pub major: Option<Major>,
-    pub minor: Option<Minor>,
-    pub patch: Option<Patch>,
-    pub patch_minor: Option<PatchMinor>,
+pub struct OS<'a> {
+    pub family: Cow<'a, str>,
+    pub major: Option<Cow<'a, str>>,
+    pub minor: Option<Cow<'a, str>>,
+    pub patch: Option<Cow<'a, str>>,
+    pub patch_minor: Option<Cow<'a, str>>,
 }
 
-impl Default for OS {
-    fn default() -> OS {
-        OS {
-            family: "Other".to_string(),
+impl<'a> Default for OS<'a> {
+    fn default() -> Self {
+        Self {
+            family: Cow::Borrowed("Other"),
             major: None,
             minor: None,
             patch: None,

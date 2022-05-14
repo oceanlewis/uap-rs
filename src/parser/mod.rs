@@ -40,7 +40,7 @@ pub struct UserAgentParser {
 
 impl Parser for UserAgentParser {
     /// Returns the full `Client` info when given a user agent string
-    fn parse(&self, user_agent: &str) -> Client {
+    fn parse<'a>(&self, user_agent: &'a str) -> Client<'a> {
         Client {
             device: self.parse_device(user_agent),
             os: self.parse_os(user_agent),
@@ -49,7 +49,7 @@ impl Parser for UserAgentParser {
     }
 
     /// Returns just the `Device` info when given a user agent string
-    fn parse_device(&self, user_agent: &str) -> Device {
+    fn parse_device<'a>(&self, user_agent: &'a str) -> Device<'a> {
         self.device_matchers
             .iter()
             .find_map(|matcher| matcher.try_parse(user_agent))
@@ -57,7 +57,7 @@ impl Parser for UserAgentParser {
     }
 
     /// Returns just the `OS` info when given a user agent string
-    fn parse_os(&self, user_agent: &str) -> OS {
+    fn parse_os<'a>(&self, user_agent: &'a str) -> OS<'a> {
         self.os_matchers
             .iter()
             .find_map(|matcher| matcher.try_parse(user_agent))
@@ -65,7 +65,7 @@ impl Parser for UserAgentParser {
     }
 
     /// Returns just the `UserAgent` info when given a user agent string
-    fn parse_user_agent(&self, user_agent: &str) -> UserAgent {
+    fn parse_user_agent<'a>(&self, user_agent: &'a str) -> UserAgent<'a> {
         self.user_agent_matchers
             .iter()
             .find_map(|matcher| matcher.try_parse(user_agent))
@@ -129,21 +129,32 @@ impl UserAgentParser {
     }
 }
 
+#[inline]
 pub(self) fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
-    if !s.as_ref().is_empty() {
-        Some(s)
-    } else {
+    if s.as_ref().is_empty() {
         None
+    } else {
+        Some(s)
     }
 }
 
-pub(self) fn replace(replacement: &str, captures: &regex::Captures) -> String {
-    if replacement.contains('$') && captures.len() > 0 {
-        let mut target = String::new();
+#[inline]
+pub(self) fn has_group(replacement: &str) -> bool {
+    replacement.contains('$')
+}
+
+#[inline]
+pub(self) fn replace_cow<'a>(
+    replacement: &str,
+    replacement_has_group: bool,
+    captures: &regex::Captures,
+) -> Cow<'a, str> {
+    if replacement_has_group && captures.len() > 0 {
+        let mut target = String::with_capacity(31);
         captures.expand(replacement, &mut target);
-        target.trim().to_owned()
+        Cow::Owned(target.trim().to_owned())
     } else {
-        replacement.to_owned()
+        Cow::Owned(replacement.to_owned())
     }
 }
 

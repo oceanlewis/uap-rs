@@ -1,24 +1,21 @@
-use super::{Deserialize, Serialize};
+use std::borrow::Cow;
 
-pub type Family = String;
-pub type Major = String;
-pub type Minor = String;
-pub type Patch = String;
+use super::{Deserialize, Serialize};
 
 /// Describes the `Family` as well as the `Major`, `Minor`, and `Patch` versions
 /// of a `UserAgent` client
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, Hash, PartialEq)]
-pub struct UserAgent {
-    pub family: Family,
-    pub major: Option<Major>,
-    pub minor: Option<Minor>,
-    pub patch: Option<Patch>,
+pub struct UserAgent<'a> {
+    pub family: Cow<'a, str>,
+    pub major: Option<Cow<'a, str>>,
+    pub minor: Option<Cow<'a, str>>,
+    pub patch: Option<Cow<'a, str>>,
 }
 
-impl Default for UserAgent {
-    fn default() -> UserAgent {
-        UserAgent {
-            family: "Other".to_string(),
+impl<'a> Default for UserAgent<'a> {
+    fn default() -> Self {
+        Self {
+            family: Cow::Borrowed("Other"),
             major: None,
             minor: None,
             patch: None,
