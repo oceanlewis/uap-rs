@@ -1,4 +1,7 @@
-use super::{Deserialize, Device, Serialize, UserAgent, OS};
+use super::Device;
+use super::UserAgent;
+use super::OS;
+use super::{Deserialize, Serialize};
 
 /// Houses the `Device`, `OS`, and `UserAgent` structs, which each get parsed
 /// out from a user agent string by a `UserAgentParser`.

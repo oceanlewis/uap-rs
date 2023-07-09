@@ -18,6 +18,23 @@
 //! assert_eq!(client.os, os);
 //! assert_eq!(client.user_agent, user_agent);
 //! ```
+//!
+//! Alternatively you can use the `UserAgentParserBuilder` to create a parser:
+//! ```rust
+//! # use uaparser::*;
+//! let ua_parser = UserAgentParserBuilder::new().build_from_yaml("./src/core/regexes.yaml").expect("Parser creation failed");
+//! let user_agent_string =
+//!     String::from("Mozilla/5.0 (X11; Linux x86_64; rv:2.0b8pre) Gecko/20101031 Firefox-4.0/4.0b8pre");
+//! let client = ua_parser.parse(&user_agent_string);
+//!
+//! let device = ua_parser.parse_device(&user_agent_string);
+//! let os = ua_parser.parse_os(&user_agent_string);
+//! let user_agent = ua_parser.parse_user_agent(&user_agent_string);
+//!
+//! assert_eq!(client.device, device);
+//! assert_eq!(client.os, os);
+//! assert_eq!(client.user_agent, user_agent);
+//! ```
 
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
@@ -29,17 +46,20 @@ use serde_derive::{Deserialize, Serialize};
 
 mod client;
 mod device;
-mod file;
-mod os;
-mod parser;
-mod user_agent;
+pub use device::Device;
 
-pub use parser::{Error, UserAgentParser};
+mod os;
+pub use os::OS;
+
+mod user_agent;
+pub use user_agent::UserAgent;
+
+mod file;
+mod parser;
+
+pub use parser::{Error, UserAgentParser, UserAgentParserBuilder};
 
 pub use client::Client;
-pub use device::Device;
-pub use os::OS;
-pub use user_agent::UserAgent;
 
 pub trait Parser {
     fn parse<'a>(&self, user_agent: &'a str) -> Client<'a>;
@@ -59,7 +79,24 @@ mod tests {
     use std::{borrow::Cow, fmt::Debug};
 
     #[test]
-    fn parse_os() {
+    fn parse_os_with_unicode() {
+        let parser = UserAgentParserBuilder::new()
+            .unicode(true)
+            .build_from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
+        do_parse_os_test_with_parser(&parser)
+    }
+
+    #[test]
+    fn parse_os_without_unicode() {
+        let parser = UserAgentParserBuilder::new()
+            .unicode(false)
+            .build_from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
+        do_parse_os_test_with_parser(&parser)
+    }
+
+    fn do_parse_os_test_with_parser(parser: &UserAgentParser) {
         #[derive(Deserialize, Debug)]
         struct OSTestCases<'a> {
             test_cases: Vec<OSTestCase<'a>>,
@@ -74,9 +111,6 @@ mod tests {
             patch: Option<Cow<'a, str>>,
             patch_minor: Option<Cow<'a, str>>,
         }
-
-        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
-            .expect("Parser creation failed");
 
         let test_os = std::fs::File::open("./src/core/tests/test_os.yaml")
             .expect("test_device.yaml failed to load");
@@ -132,7 +166,24 @@ mod tests {
     }
 
     #[test]
-    fn parse_device() {
+    fn parse_device_with_unicode() {
+        let parser = UserAgentParserBuilder::new()
+            .unicode(true)
+            .build_from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
+        do_parse_device_test_with_parser(&parser)
+    }
+
+    #[test]
+    fn parse_device_without_unicode() {
+        let parser = UserAgentParserBuilder::new()
+            .unicode(false)
+            .build_from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
+        do_parse_device_test_with_parser(&parser)
+    }
+
+    fn do_parse_device_test_with_parser(parser: &UserAgentParser) {
         #[derive(Deserialize, Debug)]
         struct DeviceTestCases<'a> {
             test_cases: Vec<DeviceTestCase<'a>>,
@@ -145,9 +196,6 @@ mod tests {
             brand: Option<Cow<'a, str>>,
             model: Option<Cow<'a, str>>,
         }
-
-        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
-            .expect("Parser creation failed");
 
         let file = std::fs::File::open("./src/core/tests/test_device.yaml")
             .expect("test_device.yaml failed to load");
@@ -190,7 +238,23 @@ mod tests {
     }
 
     #[test]
-    fn parse_user_agent() {
+    fn parse_user_agent_with_unicode() {
+        let parser = UserAgentParserBuilder::new()
+            .unicode(true)
+            .build_from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
+        do_parse_user_agent_test_with_parser(&parser)
+    }
+
+    #[test]
+    fn parse_user_agent_without_unicode() {
+        let parser = UserAgentParserBuilder::new()
+            .unicode(false)
+            .build_from_yaml("./src/core/regexes.yaml")
+            .expect("Parser creation failed");
+        do_parse_user_agent_test_with_parser(&parser)
+    }
+    fn do_parse_user_agent_test_with_parser(parser: &UserAgentParser) {
         #[derive(Deserialize, Debug)]
         struct UserAgentTestCases<'a> {
             test_cases: Vec<UserAgentTestCase<'a>>,
@@ -204,9 +268,6 @@ mod tests {
             minor: Option<Cow<'a, str>>,
             patch: Option<Cow<'a, str>>,
         }
-
-        let parser = UserAgentParser::from_yaml("./src/core/regexes.yaml")
-            .expect("Parser creation failed");
 
         let test_ua = std::fs::File::open("./src/core/tests/test_ua.yaml")
             .expect("test_device.yaml failed to load");
