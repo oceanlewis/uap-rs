@@ -19,6 +19,9 @@ use super::{
     user_agent::UserAgent,
 };
 
+mod builder;
+use self::builder::UserAgentParserBuilder;
+
 #[derive(Debug, Display, From)]
 pub enum Error {
     IO(std::io::Error),
@@ -73,6 +76,10 @@ impl Parser for UserAgentParser {
 }
 
 impl UserAgentParser {
+    pub fn builder() -> UserAgentParserBuilder {
+        UserAgentParserBuilder::new()
+    }
+
     /// Attempts to construct a `UserAgentParser` from the path to a file
     pub fn from_yaml(path: &str) -> Result<UserAgentParser, Error> {
         let file = std::fs::File::open(path)?;
@@ -184,74 +191,6 @@ impl UserAgentParser {
             os_matchers,
             user_agent_matchers,
         })
-    }
-}
-
-pub struct UserAgentParserBuilder {
-    device: bool,
-    os: bool,
-    user_agent: bool,
-    unicode: bool,
-}
-
-impl UserAgentParserBuilder {
-    pub fn new() -> Self {
-        UserAgentParserBuilder {
-            device: true,
-            os: true,
-            user_agent: true,
-            unicode: true,
-        }
-    }
-
-    /// Enable or disable unicode support. This is enabled by default.
-    /// Unicode regexes are much more complex and take up more memory.
-    /// Most uaparser implementation do not support unicode, so disabling
-    /// this is generally safe to do.
-    pub fn unicode(mut self, yes: bool) -> Self {
-        self.unicode = yes;
-        return self;
-    }
-
-    /// Enable or disable device parsing. This is enabled by default.
-    /// Because all regexes are compiled up front, disabling this will
-    /// save a decent amount of memory.
-    pub fn device(mut self, yes: bool) -> Self {
-        self.device = yes;
-        return self;
-    }
-
-    /// Enable or disable os parsing. This is enabled by default.
-    /// Because all regexes are compiled up front, disabling this will
-    /// save a decent amount of memory.
-    pub fn os(mut self, yes: bool) -> Self {
-        self.os = yes;
-        return self;
-    }
-
-    /// Enable or disable user agent parsing. This is enabled by default.
-    /// Because all regexes are compiled up front, disabling this will
-    /// save a decent amount of memory.
-    pub fn user_agent(mut self, yes: bool) -> Self {
-        self.user_agent = yes;
-        return self;
-    }
-
-    pub fn build_from_yaml(self, path: &str) -> Result<UserAgentParser, Error> {
-        UserAgentParser::_build_from_yaml(path, self)
-    }
-    /// Attempts to construct a `UserAgentParser` from a slice of raw bytes. The
-    /// intention with providing this function is to allow using the
-    /// `include_bytes!` macro to compile the `regexes.yaml` file into the
-    /// the library by a consuming application.
-    ///
-    /// ```rust
-    /// # use uaparser::*;
-    /// let regexes = include_bytes!("../../src/core/regexes.yaml");
-    /// let parser = UserAgentParserBuilder::new().build_from_bytes(regexes);
-    /// ```
-    pub fn build_from_bytes(self, bytes: &[u8]) -> Result<UserAgentParser, Error> {
-        UserAgentParser::_build_from_bytes(bytes, self)
     }
 }
 

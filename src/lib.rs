@@ -22,7 +22,7 @@
 //! Alternatively you can use the `UserAgentParserBuilder` to create a parser:
 //! ```rust
 //! # use uaparser::*;
-//! let ua_parser = UserAgentParserBuilder::new().build_from_yaml("./src/core/regexes.yaml").expect("Parser creation failed");
+//! let ua_parser = UserAgentParser::builder().build_from_yaml("./src/core/regexes.yaml").expect("Parser creation failed");
 //! let user_agent_string =
 //!     String::from("Mozilla/5.0 (X11; Linux x86_64; rv:2.0b8pre) Gecko/20101031 Firefox-4.0/4.0b8pre");
 //! let client = ua_parser.parse(&user_agent_string);
@@ -57,7 +57,7 @@ pub use user_agent::UserAgent;
 mod file;
 mod parser;
 
-pub use parser::{Error, UserAgentParser, UserAgentParserBuilder};
+pub use parser::{Error, UserAgentParser};
 
 pub use client::Client;
 
@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn parse_os_with_unicode() {
-        let parser = UserAgentParserBuilder::new()
+        let parser = UserAgentParser::builder()
             .unicode(true)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn parse_os_without_unicode() {
-        let parser = UserAgentParserBuilder::new()
+        let parser = UserAgentParser::builder()
             .unicode(false)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
@@ -167,7 +167,7 @@ mod tests {
 
     #[test]
     fn parse_device_with_unicode() {
-        let parser = UserAgentParserBuilder::new()
+        let parser = UserAgentParser::builder()
             .unicode(true)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
@@ -176,7 +176,7 @@ mod tests {
 
     #[test]
     fn parse_device_without_unicode() {
-        let parser = UserAgentParserBuilder::new()
+        let parser = UserAgentParser::builder()
             .unicode(false)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
@@ -239,7 +239,7 @@ mod tests {
 
     #[test]
     fn parse_user_agent_with_unicode() {
-        let parser = UserAgentParserBuilder::new()
+        let parser = UserAgentParser::builder()
             .unicode(true)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
@@ -248,7 +248,7 @@ mod tests {
 
     #[test]
     fn parse_user_agent_without_unicode() {
-        let parser = UserAgentParserBuilder::new()
+        let parser = UserAgentParser::builder()
             .unicode(false)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");

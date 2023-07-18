@@ -1,7 +1,7 @@
-use uaparser::{Parser, UserAgentParserBuilder};
+use uaparser::{Parser, UserAgentParser};
 
 fn main() {
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .unicode(false)
         .device(false)
         .os(true)

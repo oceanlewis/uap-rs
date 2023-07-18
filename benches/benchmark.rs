@@ -2,7 +2,7 @@ use std::{fs::File, time::Duration};
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use serde_derive::Deserialize;
-use uaparser::{Parser, UserAgentParserBuilder};
+use uaparser::{Parser, UserAgentParser};
 
 #[derive(Deserialize, Debug)]
 struct TestCase {
@@ -15,7 +15,7 @@ struct TestCases {
 }
 
 fn bench_os(c: &mut Criterion) {
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .device(false)
         .os(true)
         .user_agent(false)
@@ -33,7 +33,7 @@ fn bench_os(c: &mut Criterion) {
         })
     });
 
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .device(false)
         .os(true)
         .user_agent(false)
@@ -51,7 +51,7 @@ fn bench_os(c: &mut Criterion) {
 }
 
 fn bench_device(c: &mut Criterion) {
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .device(true)
         .os(false)
         .user_agent(false)
@@ -69,7 +69,7 @@ fn bench_device(c: &mut Criterion) {
         })
     });
 
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .device(true)
         .os(false)
         .user_agent(false)
@@ -87,7 +87,7 @@ fn bench_device(c: &mut Criterion) {
 }
 
 fn bench_ua(c: &mut Criterion) {
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .device(false)
         .os(false)
         .user_agent(true)
@@ -105,7 +105,7 @@ fn bench_ua(c: &mut Criterion) {
         })
     });
 
-    let parser = UserAgentParserBuilder::new()
+    let parser = UserAgentParser::builder()
         .device(false)
         .os(false)
         .user_agent(true)
