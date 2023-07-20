@@ -81,7 +81,7 @@ mod tests {
     #[test]
     fn parse_os_with_unicode() {
         let parser = UserAgentParser::builder()
-            .unicode(true)
+            .with_unicode_support(true)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
         do_parse_os_test_with_parser(&parser)
@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn parse_os_without_unicode() {
         let parser = UserAgentParser::builder()
-            .unicode(false)
+            .with_unicode_support(false)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
         do_parse_os_test_with_parser(&parser)
@@ -168,7 +168,7 @@ mod tests {
     #[test]
     fn parse_device_with_unicode() {
         let parser = UserAgentParser::builder()
-            .unicode(true)
+            .with_unicode_support(true)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
         do_parse_device_test_with_parser(&parser)
@@ -177,7 +177,7 @@ mod tests {
     #[test]
     fn parse_device_without_unicode() {
         let parser = UserAgentParser::builder()
-            .unicode(false)
+            .with_unicode_support(false)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
         do_parse_device_test_with_parser(&parser)
@@ -240,7 +240,7 @@ mod tests {
     #[test]
     fn parse_user_agent_with_unicode() {
         let parser = UserAgentParser::builder()
-            .unicode(true)
+            .with_unicode_support(true)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
         do_parse_user_agent_test_with_parser(&parser)
@@ -249,7 +249,7 @@ mod tests {
     #[test]
     fn parse_user_agent_without_unicode() {
         let parser = UserAgentParser::builder()
-            .unicode(false)
+            .with_unicode_support(false)
             .build_from_yaml("./src/core/regexes.yaml")
             .expect("Parser creation failed");
         do_parse_user_agent_test_with_parser(&parser)

@@ -2,7 +2,7 @@ use uaparser::{Parser, UserAgentParser};
 
 fn main() {
     let parser = UserAgentParser::builder()
-        .unicode(false)
+        .with_unicode_support(false)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 

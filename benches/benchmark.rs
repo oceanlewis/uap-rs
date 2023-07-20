@@ -16,9 +16,9 @@ struct TestCases {
 
 fn bench_os(c: &mut Criterion) {
     let parser = UserAgentParser::builder()
-        .device(false)
-        .os(true)
-        .user_agent(false)
+        .with_device(false)
+        .with_os(true)
+        .with_user_agent(false)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 
@@ -34,10 +34,10 @@ fn bench_os(c: &mut Criterion) {
     });
 
     let parser = UserAgentParser::builder()
-        .device(false)
-        .os(true)
-        .user_agent(false)
-        .unicode(false)
+        .with_device(false)
+        .with_os(true)
+        .with_user_agent(false)
+        .with_unicode_support(false)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 
@@ -52,9 +52,9 @@ fn bench_os(c: &mut Criterion) {
 
 fn bench_device(c: &mut Criterion) {
     let parser = UserAgentParser::builder()
-        .device(true)
-        .os(false)
-        .user_agent(false)
+        .with_device(true)
+        .with_os(false)
+        .with_user_agent(false)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 
@@ -70,10 +70,10 @@ fn bench_device(c: &mut Criterion) {
     });
 
     let parser = UserAgentParser::builder()
-        .device(true)
-        .os(false)
-        .user_agent(false)
-        .unicode(false)
+        .with_device(true)
+        .with_os(false)
+        .with_user_agent(false)
+        .with_unicode_support(false)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 
@@ -88,9 +88,9 @@ fn bench_device(c: &mut Criterion) {
 
 fn bench_ua(c: &mut Criterion) {
     let parser = UserAgentParser::builder()
-        .device(false)
-        .os(false)
-        .user_agent(true)
+        .with_device(false)
+        .with_os(false)
+        .with_user_agent(true)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 
@@ -106,10 +106,10 @@ fn bench_ua(c: &mut Criterion) {
     });
 
     let parser = UserAgentParser::builder()
-        .device(false)
-        .os(false)
-        .user_agent(true)
-        .unicode(false)
+        .with_device(false)
+        .with_os(false)
+        .with_user_agent(true)
+        .with_unicode_support(false)
         .build_from_yaml("./src/core/regexes.yaml")
         .expect("Parser creation failed");
 
