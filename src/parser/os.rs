@@ -8,7 +8,7 @@ pub enum Error {
 #[derive(Debug)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct Matcher {
-    regex: regex::Regex,
+    regex: regex::bytes::Regex,
     os_replacement: Option<String>,
     os_v1_replacement: Option<String>,
     os_v2_replacement: Option<String>,
@@ -23,18 +23,18 @@ impl<'a> SubParser<'a> for Matcher {
     type Item = OS<'a>;
 
     fn try_parse(&self, text: &'a str) -> Option<Self::Item> {
-        if !self.regex.is_match(text) {
+        if !self.regex.is_match(text.as_bytes()) {
             return None;
         }
 
-        if let Some(captures) = self.regex.captures(text) {
+        if let Some(captures) = self.regex.captures(text.as_bytes()) {
             let family: Cow<'a, str> = if let Some(os_replacement) = &self.os_replacement
             {
                 replace_cow(os_replacement, self.os_replacement_has_group, &captures)
             } else {
                 captures
                     .get(1)
-                    .map(|x| x.as_str())
+                    .and_then(match_to_str)
                     .and_then(none_if_empty)
                     .map(Cow::Borrowed)?
             };
@@ -49,7 +49,7 @@ impl<'a> SubParser<'a> for Matcher {
                 } else {
                     captures
                         .get(2)
-                        .map(|x| x.as_str())
+                        .and_then(match_to_str)
                         .and_then(none_if_empty)
                         .map(Cow::Borrowed)
                 };
@@ -64,7 +64,7 @@ impl<'a> SubParser<'a> for Matcher {
                 } else {
                     captures
                         .get(3)
-                        .map(|x| x.as_str())
+                        .and_then(match_to_str)
                         .and_then(none_if_empty)
                         .map(Cow::Borrowed)
                 };
@@ -79,14 +79,14 @@ impl<'a> SubParser<'a> for Matcher {
                 } else {
                     captures
                         .get(4)
-                        .map(|x| x.as_str())
+                        .and_then(match_to_str)
                         .and_then(none_if_empty)
                         .map(Cow::Borrowed)
                 };
 
             let patch_minor: Option<Cow<'a, str>> = captures
                 .get(5)
-                .map(|x| x.as_str())
+                .and_then(match_to_str)
                 .and_then(none_if_empty)
                 .map(Cow::Borrowed);
 
@@ -104,8 +104,10 @@ impl<'a> SubParser<'a> for Matcher {
 }
 
 impl Matcher {
-    pub fn try_from(entry: OSParserEntry) -> Result<Matcher, Error> {
-        let regex = regex::Regex::new(&clean_escapes(&entry.regex));
+    pub fn try_from(entry: OSParserEntry, unicode: bool) -> Result<Matcher, Error> {
+        let regex = regex::bytes::RegexBuilder::new(&clean_escapes(&entry.regex))
+            .unicode(unicode)
+            .build();
 
         Ok(Matcher {
             regex: regex?,

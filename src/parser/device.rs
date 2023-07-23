@@ -7,7 +7,7 @@ pub enum Error {
 
 #[derive(Debug)]
 pub struct Matcher {
-    regex: regex::Regex,
+    regex: regex::bytes::Regex,
     device_replacement: Option<String>,
     brand_replacement: Option<String>,
     model_replacement: Option<String>,
@@ -20,11 +20,11 @@ impl<'a> SubParser<'a> for Matcher {
     type Item = Device<'a>;
 
     fn try_parse(&self, text: &'a str) -> Option<Self::Item> {
-        if !self.regex.is_match(text) {
+        if !self.regex.is_match(text.as_bytes()) {
             return None;
         }
 
-        if let Some(captures) = self.regex.captures(text) {
+        if let Some(captures) = self.regex.captures(text.as_bytes()) {
             let family: Cow<'a, str> =
                 if let Some(device_replacement) = &self.device_replacement {
                     replace_cow(
@@ -35,7 +35,7 @@ impl<'a> SubParser<'a> for Matcher {
                 } else {
                     captures
                         .get(1)
-                        .map(|x| x.as_str())
+                        .and_then(match_to_str)
                         .and_then(none_if_empty)
                         .map(Cow::Borrowed)?
                 };
@@ -56,7 +56,7 @@ impl<'a> SubParser<'a> for Matcher {
                 } else {
                     captures
                         .get(1)
-                        .map(|x| x.as_str())
+                        .and_then(match_to_str)
                         .and_then(none_if_empty)
                         .map(Cow::Borrowed)
                 };
@@ -73,15 +73,16 @@ impl<'a> SubParser<'a> for Matcher {
 }
 
 impl Matcher {
-    pub fn try_from(entry: DeviceParserEntry) -> Result<Matcher, Error> {
+    pub fn try_from(entry: DeviceParserEntry, unicode: bool) -> Result<Matcher, Error> {
         let regex_with_flags = if entry.regex_flag.as_ref().map_or(true, String::is_empty)
         {
             entry.regex
         } else {
             format!("(?{}){}", entry.regex_flag.unwrap_or_default(), entry.regex)
         };
-        let regex = regex::RegexBuilder::new(&clean_escapes(&regex_with_flags))
+        let regex = regex::bytes::RegexBuilder::new(&clean_escapes(&regex_with_flags))
             .size_limit(20 * (1 << 20))
+            .unicode(unicode)
             .build();
 
         Ok(Matcher {

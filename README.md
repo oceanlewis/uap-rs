@@ -13,3 +13,13 @@ To get to the docs, clone the repo and run `cargo doc --open` to build the docum
 - `git submodule update --init` to get started
 - `cargo test`
 - `cargo test -- --nocapture` for the full results
+
+## Performance and Benchmarking
+`cargo bench` will run a criterion benchmark suite.
+
+To see memory usage of the compiled regex list you can run the examples with a tool that tracks memory usage.
+
+Example (on MacOS):
+```
+/usr/bin/time -l cargo run --examples full_parser
+```
