@@ -220,9 +220,11 @@ fn replace_cow<'a>(
         let raw_replacement = replacement.as_bytes();
         captures.expand(raw_replacement, &mut target);
         std::str::from_utf8(&target)
-            .map(|s| Cow::Owned(s.trim().to_owned()))
             // What is the behavior if we can't parse a string???
-            .unwrap_or_else(|_| Cow::Owned(replacement.to_owned()))
+            .map_or_else(
+                |_| Cow::Owned(replacement.to_owned()),
+                |s| Cow::Owned(s.trim().to_owned()),
+            )
     } else {
         Cow::Owned(replacement.to_owned())
     }
