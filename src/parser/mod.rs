@@ -76,6 +76,7 @@ impl Parser for UserAgentParser {
 }
 
 impl UserAgentParser {
+    #[must_use]
     pub fn builder() -> UserAgentParserBuilder {
         UserAgentParserBuilder::new()
     }
