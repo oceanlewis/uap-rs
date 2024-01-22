@@ -195,7 +195,7 @@ impl UserAgentParser {
 }
 
 #[inline]
-pub(self) fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
+fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
     if s.as_ref().is_empty() {
         None
     } else {
@@ -204,12 +204,12 @@ pub(self) fn none_if_empty<T: AsRef<str>>(s: T) -> Option<T> {
 }
 
 #[inline]
-pub(self) fn has_group(replacement: &str) -> bool {
+fn has_group(replacement: &str) -> bool {
     replacement.contains('$')
 }
 
 #[inline]
-pub(self) fn replace_cow<'a>(
+fn replace_cow<'a>(
     replacement: &str,
     replacement_has_group: bool,
     captures: &regex::bytes::Captures,
@@ -228,7 +228,7 @@ pub(self) fn replace_cow<'a>(
 }
 
 #[inline]
-pub(self) fn match_to_str(m: regex::bytes::Match) -> Option<&str> {
+fn match_to_str(m: regex::bytes::Match) -> Option<&str> {
     std::str::from_utf8(m.as_bytes()).ok()
 }
 
