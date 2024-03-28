@@ -31,6 +31,8 @@ pub enum Error {
     UserAgent(UserAgentError),
 }
 
+impl std::error::Error for Error {}
+
 /// Handles the actual parsing of a user agent string by delegating to
 /// the respective `SubParser`
 #[derive(Debug)]
