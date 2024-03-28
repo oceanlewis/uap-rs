@@ -23,7 +23,7 @@ impl UserAgentParserBuilder {
     /// this is generally safe to do.
     pub fn with_unicode_support(mut self, enabled: bool) -> Self {
         self.unicode = enabled;
-        return self;
+        self
     }
 
     /// Enable or disable device parsing. This is enabled by default.
@@ -31,7 +31,7 @@ impl UserAgentParserBuilder {
     /// save a decent amount of memory.
     pub fn with_device(mut self, enabled: bool) -> Self {
         self.device = enabled;
-        return self;
+        self
     }
 
     /// Enable or disable os parsing. This is enabled by default.
@@ -39,7 +39,7 @@ impl UserAgentParserBuilder {
     /// save a decent amount of memory.
     pub fn with_os(mut self, enabled: bool) -> Self {
         self.os = enabled;
-        return self;
+        self
     }
 
     /// Enable or disable user agent parsing. This is enabled by default.
@@ -47,7 +47,7 @@ impl UserAgentParserBuilder {
     /// save a decent amount of memory.
     pub fn with_user_agent(mut self, enabled: bool) -> Self {
         self.user_agent = enabled;
-        return self;
+        self
     }
 
     pub fn build_from_yaml(self, path: &str) -> Result<UserAgentParser, Error> {
