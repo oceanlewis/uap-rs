@@ -14,15 +14,15 @@ readme        = "README.md"
 keywords      = ["user", "agent", "parser", "uap", "uaparser"]
 
 [dependencies]
-lazy_static = "1.4.0"
-regex = "1.9.1"
-serde = "1.0.137"
-serde_yaml = "0.8.24"
-serde_derive = "1.0.137"
-derive_more = "0.99.17"
+lazy_static = "1.4"
+regex = "1.10"
+serde = "1.0"
+serde_yaml = "0.9"
+serde_derive = "1.0"
+derive_more = "0.99"
 
 [dev-dependencies]
-criterion = "0.3.5"
+criterion = "0.5"
 
 [[bench]]
 name = "benchmark"
