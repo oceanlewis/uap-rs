@@ -1,9 +1,9 @@
 [package]
 name          = "uaparser"
-version       = "0.6.2"
+version       = "0.6.3"
 description   = "A Rust implementation of the UA Parser"
 license       = "MIT"
-authors       = ["David Lewis"]
+authors       = ["Ocean Lewis"]
 edition       = "2018"
 
 homepage      = "https://github.com/davidarmstronglewis/uap-rs"
