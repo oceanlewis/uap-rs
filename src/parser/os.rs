@@ -5,7 +5,7 @@ pub enum Error {
     Regex(regex::Error),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct Matcher {
     regex: regex::bytes::Regex,
