@@ -1,6 +1,6 @@
 [package]
 name          = "uaparser"
-version       = "0.6.3"
+version       = "0.6.4"
 description   = "A Rust implementation of the UA Parser"
 license       = "MIT"
 authors       = ["Ocean Lewis"]
